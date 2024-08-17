@@ -1,0 +1,22 @@
+/** @format */
+
+.login-page {
+  background: conic-gradient(
+    from -89.75deg at 50% 50%,
+    #1eadea -71.21deg,
+    #7ef6ff 78.18deg,
+    #77d2ed 144.78deg,
+    #5bbce2 218.59deg,
+    #1eadea 288.79deg,
+    #7ef6ff 438.18deg
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-page  .container {
+    max-width: 500px;
+    width: ;
+}
