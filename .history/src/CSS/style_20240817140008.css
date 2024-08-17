@@ -1,0 +1,39 @@
+/** @format */
+
+.login-page {
+  background: conic-gradient(
+    from -89.75deg at 50% 50%,
+    #1eadea -71.21deg,
+    #7ef6ff 78.18deg,
+    #77d2ed 144.78deg,
+    #5bbce2 218.59deg,
+    #1eadea 288.79deg,
+    #7ef6ff 438.18deg
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-page .container {
+  max-width: 500px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 0.5rem;
+}
+.login-page .container .logo-container {
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.login-page .container .logo-container img {
+  max-width: 200px;
+}
+
+.login-page .container .detail-tab {
+  border-bottom: 1px solid #ddd;
+  padding: 2.5rem;
+}

@@ -1,0 +1,25 @@
+/** @format */
+
+@media (max-width:786px) {
+    
+    
+}
+.login-page .container .logo-container img {
+  max-width: 150px;
+}
+.login-page .container .detail-tab {
+  padding: 20px;
+}
+.login-page .container .detail-tab .title {
+  font-size: 22px;
+}
+.login-page .container .detail-tab .desc {
+  font-size: 16px;
+}
+
+.login-page .container .form-container {
+  padding: 10px;
+}
+.login-page .container .form-container .submit-btn{
+    height: auto;
+}
