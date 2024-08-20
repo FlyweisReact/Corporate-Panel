@@ -66,7 +66,7 @@ const Userroles = () => {
       {
         successMsg: "Success !",
         setLoading,
-        additionalFunctions: [fetchUsers ,fetchDeavtivatedUser],
+        additionalFunctions: [fetchUsers],
       }
     );
   };

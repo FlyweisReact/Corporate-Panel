@@ -114,16 +114,7 @@ const Vehicles = () => {
         <span key={i?._id}> {item?.fullName} </span>
       ))}
     </div>,
-    <div className="client-list">
-      {i?.location?.coordinates?.map((points, index) => (
-        <span key={index}>
-          {" "}
-          {index + 1 === i?.location?.coordinates?.length
-            ? points
-            : `${points},`}{" "}
-        </span>
-      ))}
-    </div>,
+    <div className="client-list">---</div>,
     i?.vehicleModel,
     <div>
       {i?.registrationNumber && (

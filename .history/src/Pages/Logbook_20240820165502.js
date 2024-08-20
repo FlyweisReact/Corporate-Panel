@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import refresh from "../Assets/Logbook/refresh.svg";
+import statusfilter from "../Assets/Logbook/statusfilter.svg";
 import { GoDotFill } from "react-icons/go";
 import redisymbol from "../Assets/Logbook/redisymbol.svg";
 import dot from "../Assets/Dashboard/dot.svg";
@@ -84,7 +85,7 @@ const tbody = [
       Offline
       <img src={redisymbol} alt="" />
     </div>,
-  ],
+  ]
 ];
 
 const inactiveBody = [
@@ -145,7 +146,7 @@ const inactiveBody = [
       Offline
       <img src={redisymbol} alt="" />
     </div>,
-  ],
+  ]
 ];
 
 const allBody = [
@@ -225,7 +226,7 @@ const Logbook = () => {
     },
     {
       value: "All",
-      label: "All (2)",
+      label: "All (4)",
     },
   ];
 
@@ -242,17 +243,6 @@ const Logbook = () => {
     );
   };
 
-  let finalData;
-  if (selectedTab === "Active") {
-    finalData = tbody;
-  } else if (selectedTab === "Inactive") {
-    finalData = inactiveBody;
-  } else if (selectedTab === "All") {
-    finalData = allBody;
-  } else {
-    finalData = tbody;
-  }
-
   return (
     <section className="p-5">
       <SectionHeading title={"Logbook"} />
@@ -263,13 +253,40 @@ const Logbook = () => {
         ExtraComponent={ExtraComponent}
       />
 
-      <div className="mt-5">
-        <TableLayout
-          thead={thead}
-          className="vehicle-table mt-5 mb-5"
-          tbody={finalData}
-        />
-      </div>
+      {selectedTab === "Active" && (
+        <>
+          <div className="mt-5">
+            <TableLayout
+              thead={thead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={tbody}
+            />
+          </div>
+        </>
+      )}
+      {selectedTab === "Inactive" && (
+        <>
+          <div className="mt-5">
+            <TableLayout
+              thead={thead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={inactiveBody}
+            />
+          </div>
+        </>
+      )}
+      {selectedTab === "All" && (
+        <>
+          <div className="mt-5">
+            <TableLayout
+              thead={thead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={allBody}
+            />
+          </div>
+        </>
+      )}
+
       <Pagination
         className={"mt-5"}
         totalPages={5}

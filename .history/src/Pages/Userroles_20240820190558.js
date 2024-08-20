@@ -66,7 +66,7 @@ const Userroles = () => {
       {
         successMsg: "Success !",
         setLoading,
-        additionalFunctions: [fetchUsers ,fetchDeavtivatedUser],
+        additionalFunctions: [fetchUsers],
       }
     );
   };
@@ -272,8 +272,6 @@ const Userroles = () => {
             </div>
           </Dropdown>,
         ]);
-
-    console.log(selectedTab)
 
   return (
     <>

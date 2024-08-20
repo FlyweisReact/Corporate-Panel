@@ -114,16 +114,7 @@ const Vehicles = () => {
         <span key={i?._id}> {item?.fullName} </span>
       ))}
     </div>,
-    <div className="client-list">
-      {i?.location?.coordinates?.map((points, index) => (
-        <span key={index}>
-          {" "}
-          {index + 1 === i?.location?.coordinates?.length
-            ? points
-            : `${points},`}{" "}
-        </span>
-      ))}
-    </div>,
+    <div className="client-list">---</div>,
     i?.vehicleModel,
     <div>
       {i?.registrationNumber && (
@@ -196,7 +187,7 @@ const Vehicles = () => {
   const ExtraComponent = () => {
     return (
       <>
-        <div className="driver-actions-btn flex sm-padding gap-1">
+        <div className="driver-actions-btn flex sm-padding">
           {ids.length > 0 && (
             <button
               className="bg-[#fff] w-[173px] flex justify-center items-center gap-2  rounded-lg text-white h-[45px]"

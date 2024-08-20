@@ -31,7 +31,8 @@ const endPoints = {
 
     
     resetPassword: (userId) => `api/v1/admin/changePassword/${userId}`,
-    deactivateUser: (userId) => `api/v1/corporate/updateUserDeactivate/${userId}`,
+
+    deactivateUser: (userId) => `api/v1/admin/updateUserDeactivate/${userId}`,
   },
   truck: {
     getAllTrucks: "api/v1/admin/Truck/allTruck",

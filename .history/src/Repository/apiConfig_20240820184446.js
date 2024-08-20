@@ -26,12 +26,13 @@ const endPoints = {
       limit = 10,
     }) =>
       `api/v1/corporate/AllDeleteUser?search=${query}&dutyStatus=${dutyStatus}&fromDate=${fromDate}&toDate=${toDate}&page=${page}&limit=${limit}`,
-    createUser: "api/v1/corporate/createUser",
-    updateDetails: (userId) => `api/v1/corporate/updateUser/${userId}`,
+
+    createUser: "api/v1/admin/createUser",
 
     
     resetPassword: (userId) => `api/v1/admin/changePassword/${userId}`,
-    deactivateUser: (userId) => `api/v1/corporate/updateUserDeactivate/${userId}`,
+    updateDetails: (userId) => `api/v1/admin/updateUser/${userId}`,
+    deactivateUser: (userId) => `api/v1/admin/updateUserDeactivate/${userId}`,
   },
   truck: {
     getAllTrucks: "api/v1/admin/Truck/allTruck",
@@ -51,9 +52,7 @@ const endPoints = {
   },
   terminal: {
     getAll: ({ page = 1, limit = 15 }) =>
-      `api/v1/corporate/AllTerminal?page=${page}&limit=${limit}`,
-
-
+      `api/v1/admin/AllTerminal?page=${page}&limit=${limit}`,
     createNew: "api/v1/admin/createTerminal",
     update: (id) => `api/v1/admin/updateTerminal/${id}`,
     getDetail: (id) => `api/v1/admin/getTerminal/${id}`,

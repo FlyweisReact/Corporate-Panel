@@ -58,6 +58,8 @@ const Userroles = () => {
     fetchDeavtivatedUser();
   }, [fetchDeavtivatedUser]);
 
+  console.log(deactiveUser);
+
   // Deactivate User  function
   const deativeUserHandler = (id) => {
     putApi(
@@ -66,7 +68,7 @@ const Userroles = () => {
       {
         successMsg: "Success !",
         setLoading,
-        additionalFunctions: [fetchUsers ,fetchDeavtivatedUser],
+        additionalFunctions: [fetchUsers],
       }
     );
   };
@@ -112,10 +114,6 @@ const Userroles = () => {
     "Actions",
   ];
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedTab]);
-
   const activeTableBody =
     selectedTab === "Active"
       ? users?.data?.docs?.map((i) => [
@@ -129,7 +127,7 @@ const Userroles = () => {
           i?.terminal && (
             <div className="flex gap-2 items-center justify-center">
               <div className="w-[188px] h-[34px] bg-[#32D29633] rounded-2xl text-[#18A88C] flex justify-center  items-center">
-                {i?.terminal?.name}
+                {i?.terminal}
               </div>
             </div>
           ),
@@ -206,7 +204,7 @@ const Userroles = () => {
           i?.terminal && (
             <div className="flex gap-2 items-center justify-center">
               <div className="w-[188px] h-[34px] bg-[#32D29633] rounded-2xl text-[#18A88C] flex justify-center  items-center">
-                {i?.terminal?.name}
+                {i?.terminal}
               </div>
             </div>
           ),
@@ -273,8 +271,6 @@ const Userroles = () => {
           </Dropdown>,
         ]);
 
-    console.log(selectedTab)
-
   return (
     <>
       <CreateNewUser
@@ -297,6 +293,7 @@ const Userroles = () => {
       />
       <div className="p-5">
         <SectionHeading title={"User Roles"} />
+
         <Tabs
           setTab={setselectedTab}
           tab={selectedTab}
@@ -306,16 +303,21 @@ const Userroles = () => {
         />
         <Loader isLoading={loading} />
 
-        <TableLayout
-          thead={activeTableHead}
-          className="vehicle-table mt-5 mb-5"
-          tbody={activeTableBody}
-        />
-        <Pagination
-          totalPages={users?.data?.totalPages}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
+        {selectedTab === "Active" && (
+          <div className="mt-5">
+            <TableLayout
+              thead={activeTableHead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={activeTableBody}
+            />
+            <Pagination
+              className={"mt-5"}
+              totalPages={users?.data?.totalPages}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+          </div>
+        )}
       </div>{" "}
     </>
   );

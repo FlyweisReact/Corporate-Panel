@@ -393,6 +393,8 @@ const EditUserDetails = ({ handleClose, show, fetchApi, userId, prevData }) => {
                   required
                 >
                   <option value="">select your preference</option>
+                  <option value="SuperAdmin">Super Admin</option>
+                  <option value="Corporate">Corporate</option>
                   <option value="User">User</option>
                   <option value="Driver">Driver</option>
                 </select>

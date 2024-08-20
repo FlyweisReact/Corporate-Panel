@@ -242,17 +242,6 @@ const Logbook = () => {
     );
   };
 
-  let finalData;
-  if (selectedTab === "Active") {
-    finalData = tbody;
-  } else if (selectedTab === "Inactive") {
-    finalData = inactiveBody;
-  } else if (selectedTab === "All") {
-    finalData = allBody;
-  } else {
-    finalData = tbody;
-  }
-
   return (
     <section className="p-5">
       <SectionHeading title={"Logbook"} />
@@ -263,13 +252,40 @@ const Logbook = () => {
         ExtraComponent={ExtraComponent}
       />
 
-      <div className="mt-5">
-        <TableLayout
-          thead={thead}
-          className="vehicle-table mt-5 mb-5"
-          tbody={finalData}
-        />
-      </div>
+      {selectedTab === "Active" && (
+        <>
+          <div className="mt-5">
+            <TableLayout
+              thead={thead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={tbody}
+            />
+          </div>
+        </>
+      )}
+      {selectedTab === "Inactive" && (
+        <>
+          <div className="mt-5">
+            <TableLayout
+              thead={thead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={inactiveBody}
+            />
+          </div>
+        </>
+      )}
+      {selectedTab === "All" && (
+        <>
+          <div className="mt-5">
+            <TableLayout
+              thead={thead}
+              className="vehicle-table mt-5 mb-5"
+              tbody={allBody}
+            />
+          </div>
+        </>
+      )}
+
       <Pagination
         className={"mt-5"}
         totalPages={5}

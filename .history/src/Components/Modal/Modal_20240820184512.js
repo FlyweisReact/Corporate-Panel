@@ -154,7 +154,7 @@ const CreateNewUser = ({ handleClose, show, fetchApi }) => {
               </div>
             </div>
 
-            <div className="flex justify-center mt-5 gap-5">
+            <div className="flex justify-center mt-5 gap-5 m-5">
               <ButtonComponent
                 label={"Cancel"}
                 className={
@@ -393,6 +393,8 @@ const EditUserDetails = ({ handleClose, show, fetchApi, userId, prevData }) => {
                   required
                 >
                   <option value="">select your preference</option>
+                  <option value="SuperAdmin">Super Admin</option>
+                  <option value="Corporate">Corporate</option>
                   <option value="User">User</option>
                   <option value="Driver">Driver</option>
                 </select>
