@@ -272,26 +272,23 @@ const Userroles = () => {
             tbody={activeTableBody}
           />
         ) : (
-          <TableLayout
-            thead={deactiveTableHead}
+ <TableLayout
+            thead={activeTableHead}
             className="vehicle-table mt-5 mb-5"
-            tbody={deactiveTableBody}
+            tbody={activeTableBody}
           />
         )}
 
-        {selectedTab === "Active" ? (
-          <Pagination
-            totalPages={users?.data?.totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        ) : (
-          <Pagination
-            totalPages={deactiveUser?.data?.totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        )}
+        <TableLayout
+          thead={selectedTab === "Active" ? activeTableHead : deactiveTableHead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={activeTableBody}
+        />
+        <Pagination
+          totalPages={users?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>{" "}
     </>
   );

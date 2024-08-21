@@ -31,7 +31,7 @@ const Devices = () => {
     },
     {
       value: "Disconnected",
-      label: "Disconnected",
+      label: "Disconnected (3)",
     },
   ];
 

@@ -78,17 +78,17 @@ const Alerts = () => {
         </div>
       </div>
 
-      <TableLayout
-        thead={alertHead}
-        className="vehicle-table mt-5 mb-5"
-        tbody={alertBody}
-      />
-      <Pagination
-        className={"mt-5"}
-        totalPages={data?.data?.totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+        <TableLayout
+          thead={alertHead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={alertBody}
+        />
+        <Pagination
+          className={"mt-5"}
+          totalPages={data?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
 
       {openPopUp ? (
         <>

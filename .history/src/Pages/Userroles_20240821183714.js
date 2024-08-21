@@ -279,19 +279,15 @@ const Userroles = () => {
           />
         )}
 
-        {selectedTab === "Active" ? (
-          <Pagination
-            totalPages={users?.data?.totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        ) : (
-          <Pagination
-            totalPages={deactiveUser?.data?.totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        )}
+        {
+          selectedTab === 'Active' ? 
+        }
+
+        <Pagination
+          totalPages={users?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>{" "}
     </>
   );

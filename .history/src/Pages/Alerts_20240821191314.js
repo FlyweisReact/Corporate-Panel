@@ -7,7 +7,6 @@ import { Pagination, SectionHeading } from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
-import { returnFullName } from "../utils/utils";
 
 const Alerts = () => {
   const [openPopUp, setOpenPopUp] = useState(false);
@@ -23,6 +22,8 @@ const Alerts = () => {
   useEffect(() => {
     fetchHandler();
   }, [fetchHandler]);
+
+  console.log(data);
 
   const alertHead = [
     "Time (CDT)",
@@ -46,7 +47,7 @@ const Alerts = () => {
       {i?.time}
     </div>,
     i?.event,
-    returnFullName(i?.driver),
+    i?.driver?.fullName,
     i?.truck?.vehicleNumber,
     i?.location,
   ]);
@@ -77,19 +78,19 @@ const Alerts = () => {
           </button>
         </div>
       </div>
-
-      <TableLayout
-        thead={alertHead}
-        className="vehicle-table mt-5 mb-5"
-        tbody={alertBody}
-      />
-      <Pagination
-        className={"mt-5"}
-        totalPages={data?.data?.totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-
+      <div className="mt-8">
+        <TableLayout
+          thead={alertHead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={alertBody}
+        />
+        <Pagination
+          className={"mt-5"}
+          totalPages={data?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
       {openPopUp ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none ">

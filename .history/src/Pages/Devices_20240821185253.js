@@ -7,7 +7,7 @@ import { SectionHeading, Tabs } from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
-import { dateFormatter, returnFullName } from "../utils/utils";
+import { dateFormatter  } from "../utils/utils";
 
 const Devices = () => {
   const [selectedTab, setselectedTab] = useState("Active");
@@ -23,15 +23,16 @@ const Devices = () => {
     fetchHandler();
   }, []);
 
+  console.log(devices.data.docs);
 
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${devices.data.docs.length})`,
+      label: "Active (4)",
     },
     {
       value: "Disconnected",
-      label: "Disconnected",
+      label: "Disconnected (3)",
     },
   ];
 
@@ -88,7 +89,7 @@ const Devices = () => {
   // ];
 
   const tbody = devices.data.docs.map((i) => [
-    returnFullName(i?.driver),
+    returnFullName(),
     i?.serialNumber,
     i?.vinNumber,
     i?.status === "Disconnected" ? (

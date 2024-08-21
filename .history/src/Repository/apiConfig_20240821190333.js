@@ -61,7 +61,10 @@ const endPoints = {
       `api/v1/admin/Truck/deleteDriversFromTerminal/${id}?arrayId=${arrayId}`,
     remove: (id) => `api/v1/admin/deleteTerminal/${id}`,
   },
-
+  alert: {
+    getAll: ({ page = 1, limit = 10 }) =>
+      `api/v1/Alert/allAlert?page=${page}&limit=${limit}`,
+  },
 
   eldDevice: {
     getAll: ({ driver = "", status = "", page = 1, limit = 10 }) =>
@@ -101,10 +104,6 @@ const endPoints = {
   devices: {
     getDevices: ({ driver = "", status = "", page = 1, limit = 10 }) =>
       `api/v1/corporate/Device/allDevice?driver=${driver}&status=${status}&page=${page}&limit=${limit}`,
-  },
-  alert: {
-    getAll: ({ page = 1, limit = 10 }) =>
-      `api/v1/corporate/allAlert?page=${page}&limit=${limit}`,
   },
 };
 

@@ -24,6 +24,7 @@ const Alerts = () => {
     fetchHandler();
   }, [fetchHandler]);
 
+
   const alertHead = [
     "Time (CDT)",
     <div className="flex  items-center justify-center gap-2">
@@ -77,19 +78,19 @@ const Alerts = () => {
           </button>
         </div>
       </div>
-
-      <TableLayout
-        thead={alertHead}
-        className="vehicle-table mt-5 mb-5"
-        tbody={alertBody}
-      />
-      <Pagination
-        className={"mt-5"}
-        totalPages={data?.data?.totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-
+      <div className="mt-8">
+        <TableLayout
+          thead={alertHead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={alertBody}
+        />
+        <Pagination
+          className={"mt-5"}
+          totalPages={data?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
       {openPopUp ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none ">

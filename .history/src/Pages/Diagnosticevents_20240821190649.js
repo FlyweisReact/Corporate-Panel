@@ -9,7 +9,6 @@ import {
 import TableLayout from "../Components/TableLayout";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
-import { returnFullName } from "../utils/utils";
 
 const Diagnosticevents = () => {
   const [selectedTab, setselectedTab] = useState("Active");
@@ -26,6 +25,8 @@ const Diagnosticevents = () => {
     fetchHandler();
   }, [fetchHandler]);
 
+  console.log(data.data.docs);
+
   const thead = ["Vehicle", "Event", "Date Raised", "Event Location", "Driver"];
 
   const tbody = data?.data?.docs?.map((i) => [
@@ -33,7 +34,7 @@ const Diagnosticevents = () => {
     i?.event,
     i?.date,
     i?.location,
-    returnFullName(i?.driver),
+    retu,
   ]);
 
   const tabsOptions = [
@@ -47,17 +48,20 @@ const Diagnosticevents = () => {
     <div className="p-5">
       <SectionHeading title={"Diagnostic and Malfunction Events"} />
       <Tabs setTab={setselectedTab} tab={selectedTab} option={tabsOptions} />
-      <TableLayout
-        thead={thead}
-        className="vehicle-table mt-5 mb-5"
-        tbody={tbody}
-      />
-      <Pagination
-        className={"mt-5"}
-        totalPages={data?.data?.totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+
+      <div className="mt-5">
+        <TableLayout
+          thead={thead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={tbody}
+        />
+        <Pagination
+          className={"mt-5"}
+          totalPages={data?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </div>
   );
 };

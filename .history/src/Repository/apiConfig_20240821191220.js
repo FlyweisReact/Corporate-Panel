@@ -102,10 +102,6 @@ const endPoints = {
     getDevices: ({ driver = "", status = "", page = 1, limit = 10 }) =>
       `api/v1/corporate/Device/allDevice?driver=${driver}&status=${status}&page=${page}&limit=${limit}`,
   },
-  alert: {
-    getAll: ({ page = 1, limit = 10 }) =>
-      `api/v1/corporate/allAlert?page=${page}&limit=${limit}`,
-  },
 };
 
 export default endPoints;

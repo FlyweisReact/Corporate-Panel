@@ -104,7 +104,7 @@ const endPoints = {
   },
   alert: {
     getAll: ({ page = 1, limit = 10 }) =>
-      `api/v1/corporate/allAlert?page=${page}&limit=${limit}`,
+      `api/v1/Alert/allAlert?page=${page}&limit=${limit}`,
   },
 };
 

@@ -1,37 +1,22 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { LuArrowUpDown } from "react-icons/lu";
 import status from "../Assets/Device/status.svg";
 import { SectionHeading, Tabs } from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout";
-import { getApi } from "../Repository/Api";
-import endPoints from "../Repository/apiConfig";
-import { dateFormatter, returnFullName } from "../utils/utils";
 
 const Devices = () => {
   const [selectedTab, setselectedTab] = useState("Active");
-  const [devices, setDevices] = useState({ data: { docs: [] } });
-
-  const fetchHandler = () => {
-    getApi(endPoints.devices.getDevices({}), {
-      setResponse: setDevices,
-    });
-  };
-
-  useEffect(() => {
-    fetchHandler();
-  }, []);
-
 
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${devices.data.docs.length})`,
+      label: "Active (4)",
     },
     {
       value: "Disconnected",
-      label: "Disconnected",
+      label: "Disconnected (3)",
     },
   ];
 
@@ -48,60 +33,44 @@ const Devices = () => {
     </div>,
   ];
 
-  // const tbody = [
-  //   [
-  //     "Theron Don",
-  //     "7C9EBD9F99E6",
-  //     "3AKJHHDR2KSHU7041",
-  //     <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
-  //       Connected <img src={status} alt="" />
-  //     </div>,
-  //     "2024-08-16, 01:07 am",
-  //   ],
-  //   [
-  //     "Surrinder Singh      ",
-  //     "7C9EBD9F99E6",
-  //     "3AKJHHDR2KSHU7041",
-  //     <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
-  //       Connected <img src={status} alt="" />
-  //     </div>,
-  //     "2024-08-16, 01:07 am",
-  //   ],
-  //   [
-  //     "Leroy Hawkins      ",
-  //     "7C9EBD9F99E6",
-  //     "3AKJHHDR2KSHU7041",
-  //     <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
-  //       Connected <img src={status} alt="" />
-  //     </div>,
-  //     "2024-08-16, 01:07 am",
-  //   ],
-  //   [
-  //     "Powell William N",
-  //     "7C9EBD9F99E6",
-  //     "3AKJHHDR2KSHU7041",
-  //     <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
-  //       Connected <img src={status} alt="" />
-  //     </div>,
-  //     "2024-08-16, 01:07 am",
-  //   ],
-  // ];
-
-  const tbody = devices.data.docs.map((i) => [
-    returnFullName(i?.driver),
-    i?.serialNumber,
-    i?.vinNumber,
-    i?.status === "Disconnected" ? (
-      <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#939eb9] flex justify-center gap-1 items-center m-auto">
-        Disconnected
-      </div>
-    ) : (
+  const tbody = [
+    [
+      "Theron Don",
+      "7C9EBD9F99E6",
+      "3AKJHHDR2KSHU7041",
       <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
         Connected <img src={status} alt="" />
-      </div>
-    ),
-    dateFormatter(i?.lastConnected),
-  ]);
+      </div>,
+      "2024-08-16, 01:07 am",
+    ],
+    [
+      "Surrinder Singh      ",
+      "7C9EBD9F99E6",
+      "3AKJHHDR2KSHU7041",
+      <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
+        Connected <img src={status} alt="" />
+      </div>,
+      "2024-08-16, 01:07 am",
+    ],
+    [
+      "Leroy Hawkins      ",
+      "7C9EBD9F99E6",
+      "3AKJHHDR2KSHU7041",
+      <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
+        Connected <img src={status} alt="" />
+      </div>,
+      "2024-08-16, 01:07 am",
+    ],
+    [
+      "Powell William N",
+      "7C9EBD9F99E6",
+      "3AKJHHDR2KSHU7041",
+      <div className="w-[139px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
+        Connected <img src={status} alt="" />
+      </div>,
+      "2024-08-16, 01:07 am",
+    ],
+  ];
 
   const disconnectedThead = [
     [

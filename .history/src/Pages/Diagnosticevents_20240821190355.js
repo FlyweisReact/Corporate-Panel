@@ -1,15 +1,10 @@
 /** @format */
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  Pagination,
-  SectionHeading,
-  Tabs,
-} from "../Components/HelpingComponents";
+import { Pagination, SectionHeading } from "../Components/HelpingComponents";
 import TableLayout from "../Components/TableLayout";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
-import { returnFullName } from "../utils/utils";
 
 const Diagnosticevents = () => {
   const [selectedTab, setselectedTab] = useState("Active");
@@ -26,6 +21,8 @@ const Diagnosticevents = () => {
     fetchHandler();
   }, [fetchHandler]);
 
+  console.log(data);
+
   const thead = ["Vehicle", "Event", "Date Raised", "Event Location", "Driver"];
 
   const tbody = data?.data?.docs?.map((i) => [
@@ -33,31 +30,42 @@ const Diagnosticevents = () => {
     i?.event,
     i?.date,
     i?.location,
-    returnFullName(i?.driver),
+    i?.driver?.fullName,
   ]);
-
-  const tabsOptions = [
-    {
-      value: "Active",
-      label: `Active (${data.data.docs.length})`,
-    },
-  ];
 
   return (
     <div className="p-5">
       <SectionHeading title={"Diagnostic and Malfunction Events"} />
-      <Tabs setTab={setselectedTab} tab={selectedTab} option={tabsOptions} />
-      <TableLayout
-        thead={thead}
-        className="vehicle-table mt-5 mb-5"
-        tbody={tbody}
-      />
-      <Pagination
-        className={"mt-5"}
-        totalPages={data?.data?.totalPages}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+
+      <div className="mt-10 flex justify-between">
+        <div className="flex">
+          <div
+            className={`cursor-pointer ${
+              selectedTab === "Active"
+                ? "w-[208px] flex items-center justify-center h-[44px]  gap-2 underline-custom"
+                : "w-[208px] flex items-center justify-center  h-[44px]   gap-2"
+            }`}
+            onClick={() => setselectedTab("Active")}
+          >
+            Active ({data?.data?.docs?.length})
+          </div>
+        </div>
+      </div>
+      <hr className="" />
+
+      <div className="mt-5">
+        <TableLayout
+          thead={thead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={tbody}
+        />
+        <Pagination
+          className={"mt-5"}
+          totalPages={data?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </div>
   );
 };

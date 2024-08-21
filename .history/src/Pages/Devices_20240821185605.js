@@ -27,11 +27,11 @@ const Devices = () => {
   const tabsOptions = [
     {
       value: "Active",
-      label: `Active (${devices.data.docs.length})`,
+      label: `Active ${}`,
     },
     {
       value: "Disconnected",
-      label: "Disconnected",
+      label: "Disconnected (3)",
     },
   ];
 

@@ -132,7 +132,164 @@ const Userroles = () => {
     setCurrentPage(1);
   }, [selectedTab]);
 
-  const activeTableBody = users?.data?.docs?.map((i) => [
+  const activeTableBody =
+    selectedTab === "Active"
+      ? users?.data?.docs?.map((i) => [
+          returnFullName(i),
+          i?.email,
+          i?.userType && (
+            <div className="w-[162px] h-[34px] bg-[#32D29633] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
+              {i?.userType}
+            </div>
+          ),
+          i?.terminal && (
+            <div className="flex gap-2 items-center justify-center">
+              <div className="w-[188px] h-[34px] bg-[#32D29633] rounded-2xl text-[#18A88C] flex justify-center  items-center">
+                {i?.terminal?.name}
+              </div>
+            </div>
+          ),
+          <div className="flex items-center justify-center">
+            <div>
+              <GoDotFill style={{ color: "#A44C4C " }} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span>Offline</span>
+              <span>Last logout at 17 Jul, 2023</span>
+            </div>
+          </div>,
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  label: (
+                    <div
+                      className="text-[#8E8F8F] cursor-pointer"
+                      onClick={() => {
+                        setPrevDetails(i);
+                        setEditUser(true);
+                      }}
+                    >
+                      Edit
+                    </div>
+                  ),
+                  key: "0",
+                },
+                {
+                  label: (
+                    <div
+                      className="text-[#8E8F8F] text-left cursor-pointer"
+                      onClick={() => {
+                        setPrevDetails(i);
+                        setResetpassword(true);
+                      }}
+                    >
+                      Reset Password
+                    </div>
+                  ),
+                  key: "1",
+                },
+                {
+                  label: (
+                    <div
+                      className="text-[#F56C89] text-left cursor-pointer"
+                      onClick={() => deativeUserHandler(i?._id)}
+                    >
+                      {i?.status === "inActive"
+                        ? "Activate User"
+                        : "Deactivate User"}
+                    </div>
+                  ),
+                  key: "2",
+                },
+              ],
+            }}
+            trigger={["click"]}
+          >
+            <div className="flex justify-center z-20 relative cursor-pointer">
+              <HiOutlineDotsVertical />
+            </div>
+          </Dropdown>,
+        ])
+      : deactiveUser?.data?.docs?.map((i) => [
+          returnFullName(i),
+          i?.email,
+          i?.userType && (
+            <div className="w-[162px] h-[34px] bg-[#32D29633] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
+              {i?.userType}
+            </div>
+          ),
+          i?.terminal && (
+            <div className="flex gap-2 items-center justify-center">
+              <div className="w-[188px] h-[34px] bg-[#32D29633] rounded-2xl text-[#18A88C] flex justify-center  items-center">
+                {i?.terminal?.name}
+              </div>
+            </div>
+          ),
+          <div className="flex items-center justify-center">
+            <div>
+              <GoDotFill style={{ color: "#A44C4C " }} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span>Offline</span>
+              <span>Last logout at 17 Jul, 2023</span>
+            </div>
+          </div>,
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  label: (
+                    <div
+                      className="text-[#8E8F8F] cursor-pointer"
+                      onClick={() => {
+                        setPrevDetails(i);
+                        setEditUser(true);
+                      }}
+                    >
+                      Edit
+                    </div>
+                  ),
+                  key: "0",
+                },
+                {
+                  label: (
+                    <div
+                      className="text-[#8E8F8F] text-left cursor-pointer"
+                      onClick={() => {
+                        setPrevDetails(i);
+                        setResetpassword(true);
+                      }}
+                    >
+                      Reset Password
+                    </div>
+                  ),
+                  key: "1",
+                },
+                {
+                  label: (
+                    <div
+                      className="text-[#F56C89] text-left cursor-pointer"
+                      onClick={() => deativeUserHandler(i?._id)}
+                    >
+                      {i?.status === "inActive"
+                        ? "Activate User"
+                        : "Deactivate User"}
+                    </div>
+                  ),
+                  key: "2",
+                },
+              ],
+            }}
+            trigger={["click"]}
+          >
+            <div className="flex justify-center z-20 relative cursor-pointer">
+              <HiOutlineDotsVertical />
+            </div>
+          </Dropdown>,
+        ]);
+
+  const deactiveTableBody = deactiveUser?.data?.docs?.map((i) => [
     returnFullName(i),
     i?.email,
     i?.userType && (
@@ -208,32 +365,6 @@ const Userroles = () => {
     </Dropdown>,
   ]);
 
-  const deactiveTableBody = deactiveUser?.data?.docs?.map((i) => [
-    returnFullName(i),
-    i?.email,
-    i?.userType && (
-      <div className="w-[162px] h-[34px] bg-[#32D29633] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto">
-        {i?.userType}
-      </div>
-    ),
-    i?.terminal && (
-      <div className="flex gap-2 items-center justify-center">
-        <div className="w-[188px] h-[34px] bg-[#32D29633] rounded-2xl text-[#18A88C] flex justify-center  items-center">
-          {i?.terminal?.name}
-        </div>
-      </div>
-    ),
-    <div className="flex items-center justify-center">
-      <div>
-        <GoDotFill style={{ color: "#A44C4C " }} />
-      </div>
-      <div className="flex flex-col items-start">
-        <span>Offline</span>
-        <span>Last logout at 17 Jul, 2023</span>
-      </div>
-    </div>,
-  ]);
-
   return (
     <>
       <CreateNewUser
@@ -272,26 +403,19 @@ const Userroles = () => {
             tbody={activeTableBody}
           />
         ) : (
-          <TableLayout
-            thead={deactiveTableHead}
-            className="vehicle-table mt-5 mb-5"
-            tbody={deactiveTableBody}
-          />
+          ""
         )}
 
-        {selectedTab === "Active" ? (
-          <Pagination
-            totalPages={users?.data?.totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        ) : (
-          <Pagination
-            totalPages={deactiveUser?.data?.totalPages}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        )}
+        <TableLayout
+          thead={selectedTab === "Active" ? activeTableHead : deactiveTableHead}
+          className="vehicle-table mt-5 mb-5"
+          tbody={activeTableBody}
+        />
+        <Pagination
+          totalPages={users?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>{" "}
     </>
   );

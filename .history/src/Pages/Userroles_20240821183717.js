@@ -287,7 +287,7 @@ const Userroles = () => {
           />
         ) : (
           <Pagination
-            totalPages={deactiveUser?.data?.totalPages}
+            totalPages={users?.data?.totalPages}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />
