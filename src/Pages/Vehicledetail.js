@@ -32,7 +32,7 @@ const Vehicledetail = () => {
   const [open, setOpen] = useState(false);
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.company.getById(params?.id), {
+    getApi(endPoints.vehicles.getVehicleDetail(params?.id), {
       setResponse: setData,
     });
   }, [params]);
@@ -43,7 +43,7 @@ const Vehicledetail = () => {
 
   useEffect(() => {
     getApi(
-      endPoints.activeDTC.getAll({ truck: params?.id, page: currentPage }),
+      endPoints.vehicles.getActiveDtc({ truck: params?.id, page: currentPage }),
       {
         setResponse: setActiveDTC,
       }
@@ -54,7 +54,7 @@ const Vehicledetail = () => {
     const fd = new FormData();
     fd.append("image", file);
 
-    putApi(endPoints.truck.uploadImages(params?.id), fd, {
+    putApi(endPoints.vehicles.updateVehicleImage(params?.id), fd, {
       additionalFunctions: [fetchHandler],
     });
   };
