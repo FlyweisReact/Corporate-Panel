@@ -2,24 +2,18 @@
 
 import React, { useState } from "react";
 import { IoArrowForward } from "react-icons/io5";
+import { Link } from "react-router-dom";
 import { postApi } from "../../Repository/Api";
 import { InputComponent } from "../HelpingComponents";
 import endPoints from "../../Repository/apiConfig";
 import { ClipLoader } from "react-spinners";
 import { logo } from "../../Assets";
-import { showMsg } from "../../Repository/Api";
-import { useNavigate } from "react-router-dom";
 
 const Verifyemailandphone = () => {
   const userType = "Corporate";
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [id, setId] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const sendOtp = (e) => {
     e.preventDefault();
@@ -29,36 +23,11 @@ const Verifyemailandphone = () => {
     };
 
     const showOtp = (res) => {
-      setId(res?.data?._id);
-      showMsg("", res?.data?.otp, "success");
+      console.log(res?.data);
     };
 
     postApi(endPoints.auth.forgetPassword, payload, {
-      additionalFunctions: [(res) => showOtp(res), () => setStep(step + 1)],
-      setLoading,
-    });
-  };
-
-  const verifyOtp = (e) => {
-    e.preventDefault();
-    const payload = { otp };
-    postApi(endPoints.auth.verifyOtp(id), payload, {
-      additionalFunctions: [() => setStep(step + 1)],
-      setLoading,
-    });
-  };
-
-  const resetPassword = (e) => {
-    e.preventDefault();
-    const payload = {
-      newPassword,
-      confirmPassword,
-      otp,
-    };
-
-    postApi(endPoints.auth.changePassword(id), payload, {
-      successMsg: "Password Reset !",
-      additionalFunctions: [() => navigate("/")],
+      additionalFunctions: [(res) => showOtp(res)],
       setLoading,
     });
   };
@@ -132,39 +101,24 @@ const Verifyemailandphone = () => {
                 Verification code sent to your mobile number or email.
               </div>
             </div>
-            <form onSubmit={verifyOtp}>
-              <div className="p-10">
-                <div>
-                  <label className="font-bold">Verification Code</label>
-                  <br />
-                  <InputComponent
-                    className="border font-bold w-full h-[57px] mt-2 placeholder:pl-2"
-                    type="text"
-                    onChangeEvent={(e) => setOtp(e.target.value)}
-                    value={otp}
-                    required
-                  />
-                </div>
-
-                <div className="mt-5">
-                  <button
-                    className="bg-[#34B7C1] uppercase font-bold flex justify-center items-center gap-2 text-xl text-[white] h-[63px] w-full"
-                    type="submit"
-                  >
-                    {loading ? (
-                      <ClipLoader color="#fff" />
-                    ) : (
-                      <>
-                        NEXT <IoArrowForward />
-                      </>
-                    )}
-                  </button>
-                </div>
+            <div className="p-10">
+              <div>
+                <label>Verification Code</label>
+                <br />
+                <input className="border w-full h-[57px] mt-2" />
               </div>
-            </form>
+
+              <div className="mt-5">
+                <button
+                  onClick={() => setStep(step + 1)}
+                  className="bg-[#34B7C1] uppercase font-bold flex justify-center items-center gap-2 text-xl text-[white] h-[63px] w-full"
+                >
+                  Send Code <IoArrowForward />
+                </button>
+              </div>
+            </div>
           </div>
         )}
-
         {step === 3 && (
           <div>
             <div className=" border-b p-10">
@@ -174,42 +128,37 @@ const Verifyemailandphone = () => {
                 numbers(1234) and symbols(!@&).
               </div>
             </div>
-            <form onSubmit={resetPassword}>
-              <div className="p-10">
-                <div>
-                  <label className="font-bold">New Password</label>
-                  <br />
-                  <InputComponent
-                    className="border font-bold w-full h-[57px] mt-2 placeholder:pl-2"
-                    type="password"
-                    onChangeEvent={(e) => setNewPassword(e.target.value)}
-                    value={newPassword}
-                    required
-                  />
-                </div>
+            <div className="p-10">
+              <div>
+                <label>New Password</label>
+                <br />
+                <input className="border w-full h-[57px] mt-2" />
+              </div>
 
-                <div className="mt-2">
-                  <label className="font-bold">Confirm Password</label>
-                  <br />
-                  <InputComponent
-                    className="border font-bold w-full h-[57px] mt-2 placeholder:pl-2"
-                    type="password"
-                    onChangeEvent={(e) => setConfirmPassword(e.target.value)}
-                    value={confirmPassword}
-                    required
+              <div className="mt-2">
+                <label>Confirm Password</label>
+                <br />
+                <div className="relative">
+                  <input
+                    className="border w-full h-[50px] mt-2 pl-4 pr-12 placeholder:pl-2 "
+                    placeholder="Password"
                   />
-                </div>
-
-                <div className="mt-5">
-                  <button
-                    className="bg-[#34B7C1] uppercase font-bold flex justify-center items-center gap-2 text-xl text-[white] h-[63px] w-full"
-                    type="submit"
-                  >
-                    {loading ? <ClipLoader color="#fff" /> : "Reset"}
-                  </button>
+                  <img
+                    src="../Eye.png"
+                    alt=""
+                    className="absolute top-5 right-4"
+                  />
                 </div>
               </div>
-            </form>
+
+              <div className="mt-5">
+                <Link to="/Verifyemailandphone">
+                  <button className="bg-[#34B7C1] uppercase font-bold flex justify-center items-center gap-2 text-xl text-[white] h-[63px] w-full">
+                    Set PAssword <IoArrowForward />
+                  </button>
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </div>

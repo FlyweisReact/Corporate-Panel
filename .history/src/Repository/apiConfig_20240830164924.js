@@ -4,8 +4,8 @@ const endPoints = {
   auth: {
     login: "api/v1/corporate/signin",
     forgetPassword: "api/v1/corporate/forgetPassword",
-    verifyOtp: (id) => `api/v1/corporate/forgotVerifyotp/${id}`,
-    changePassword: (id) => `api/v1/corporate/changePassword/${id}`,
+    verifyOtp: (id) => `api/v1/auth/forgotVerifyotp/${id}`,
+    changePassword: (id) => `api/v1/auth/changePassword/${id}`,
     getProfile: "api/v1/corporate/getProfile",
   },
   diagnosisMalfunction: {

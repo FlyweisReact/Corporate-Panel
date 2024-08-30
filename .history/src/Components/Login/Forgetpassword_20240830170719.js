@@ -135,7 +135,7 @@ const Verifyemailandphone = () => {
             <form onSubmit={verifyOtp}>
               <div className="p-10">
                 <div>
-                  <label className="font-bold">Verification Code</label>
+                  <label>Verification Code</label>
                   <br />
                   <InputComponent
                     className="border font-bold w-full h-[57px] mt-2 placeholder:pl-2"

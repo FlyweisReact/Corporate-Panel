@@ -8,11 +8,9 @@ import endPoints from "../../Repository/apiConfig";
 import { ClipLoader } from "react-spinners";
 import { logo } from "../../Assets";
 import { showMsg } from "../../Repository/Api";
-import { useNavigate } from "react-router-dom";
 
 const Verifyemailandphone = () => {
   const userType = "Corporate";
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +28,8 @@ const Verifyemailandphone = () => {
 
     const showOtp = (res) => {
       setId(res?.data?._id);
-      showMsg("", res?.data?.otp, "success");
+      showMsg
+      console.log(res?.data?.otp);
     };
 
     postApi(endPoints.auth.forgetPassword, payload, {
@@ -58,7 +57,6 @@ const Verifyemailandphone = () => {
 
     postApi(endPoints.auth.changePassword(id), payload, {
       successMsg: "Password Reset !",
-      additionalFunctions: [() => navigate("/")],
       setLoading,
     });
   };
@@ -135,7 +133,7 @@ const Verifyemailandphone = () => {
             <form onSubmit={verifyOtp}>
               <div className="p-10">
                 <div>
-                  <label className="font-bold">Verification Code</label>
+                  <label>Verification Code</label>
                   <br />
                   <InputComponent
                     className="border font-bold w-full h-[57px] mt-2 placeholder:pl-2"
