@@ -23,7 +23,7 @@ const TerminalsDatils = () => {
   const { id } = useParams();
 
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.terminal.getDetail(id), {
+    getApi(endPoints.terminals.getTerminalDetail(id), {
       setResponse: setDetail,
       setLoading,
     });
@@ -40,7 +40,7 @@ const TerminalsDatils = () => {
     },
     {
       value: "Assets",
-      label: `Assets (4)`,
+      label: `Assets (${detail?.data?.assets?.length})`,
     },
     {
       value: "Admins",
@@ -87,25 +87,13 @@ const TerminalsDatils = () => {
       {i?.unitNumber}
       <i className="fa-solid fa-pen"></i>
     </div>,
-
-    "---",
+    i?.driver?.timeZone,
     i?.driver?.license ? i?.driver?.license : "---",
   ]);
 
-  const assestHead = [
-    <div className="flex items-center justify-center gap-2">
-      Asset <LuArrowUpDown />
-    </div>,
-    "Type",
-    "Attached truck",
-  ];
+  const assestHead = ["Asset", "Type", "Attached truck"];
 
-  const assestBody = [
-    ["78617", "Truck", "---"],
-    ["778", "Truck", "---"],
-    ["78616", "Truck", "---"],
-    ["78618", "Truck", "---"],
-  ];
+  const assestBody = detail?.data?.assets?.map((item) => [item, "", ""]);
 
   const adminHead = [
     <div className="flex items-center justify-center gap-2">
@@ -116,9 +104,7 @@ const TerminalsDatils = () => {
     "Terminals(s)",
   ];
 
-  const adminBody = [
-    ["ABDUL SHAIKH", "shaikhtransportation@gmail.com", "Super Admin", "---"],
-  ];
+  const adminBody = [];
 
   return (
     <>

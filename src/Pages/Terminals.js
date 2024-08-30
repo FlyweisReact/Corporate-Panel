@@ -5,7 +5,7 @@ import { LuArrowUpDown } from "react-icons/lu";
 import { IoMdAdd } from "react-icons/io";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import { deleteApi, getApi } from "../Repository/Api";
+import { deleteApi, getApi, putApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
 import { dateFormatter } from "../utils/utils";
 import {
@@ -29,6 +29,7 @@ const Terminals = () => {
   const navigate = useNavigate("");
   const [ids, setIds] = useState([]);
   const [allPushed, setAllPushed] = useState(false);
+  const [deactiveTerminals, setDeactiveTerminals] = useState({});
   const allIds = data?.data?.docs?.map((i) => i?._id);
 
   const pushInArr = (id) => {
@@ -57,8 +58,9 @@ const Terminals = () => {
     }
   };
 
+  // --- fetch active terminals
   const fetchHandler = useCallback(() => {
-    getApi(endPoints.terminal.getAll({ page: currentPage }), {
+    getApi(endPoints.terminals.activeTerminal({ page: currentPage }), {
       setResponse: setData,
       setLoading,
     });
@@ -68,10 +70,50 @@ const Terminals = () => {
     fetchHandler();
   }, [fetchHandler]);
 
+  // --- fetch deactive terminals
+  const fetchDeactiveTerminals = useCallback(() => {
+    getApi(endPoints.terminals.inactiveTerminals({ page: currentPage }), {
+      setResponse: setDeactiveTerminals,
+      setLoading,
+    });
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchDeactiveTerminals();
+  }, [fetchDeactiveTerminals]);
+
+  const fetchAll = () => {
+    fetchHandler();
+    fetchDeactiveTerminals();
+  };
+
+  // ---- deactivate terminals
+  const deactiveTerminal = () => {
+    const payload = {
+      ids,
+    };
+    putApi(endPoints.terminals.updateStatus, payload, {
+      successMsg: "Updated",
+      additionalFunctions: [fetchAll, () => setIds([])],
+      setLoading,
+    });
+  };
+
+  const activateTerminal = (id) => {
+    const payload = {
+      ids: [id],
+    };
+    putApi(endPoints.terminals.updateStatus, payload, {
+      successMsg: "Activated !",
+      additionalFunctions: [fetchAll],
+      setLoading,
+    });
+  };
+
   const removeHandler = (id) => {
-    deleteApi(endPoints.terminal.remove(id), {
+    deleteApi(endPoints.terminals.removeTerminal(id), {
       successMsg: "Removed !",
-      additionalFunctions: [fetchHandler],
+      additionalFunctions: [fetchAll],
       setLoading,
     });
   };
@@ -82,8 +124,8 @@ const Terminals = () => {
       label: `Active Terminals (${data?.data?.totalDocs})`,
     },
     {
-      value: "Deactivated Terminals",
-      label: `Deactivated Terminals`,
+      value: "Deactivated",
+      label: `Deactivated Terminals (${deactiveTerminals?.data?.totalDocs})`,
     },
   ];
 
@@ -98,6 +140,7 @@ const Terminals = () => {
               border: "1px solid #eb5757",
               fontWeight: 900,
             }}
+            onClick={() => deactiveTerminal()}
           >
             <i className="fa-solid fa-trash-can"></i>Deactivate
           </button>
@@ -116,26 +159,13 @@ const Terminals = () => {
     );
   };
 
-  //----
   const activeTableHead = [
     <input type="checkbox" onChange={() => pushAll()} />,
-    <div className="flex justify-center items-center gap-2">
-      Terminals Name
-      <LuArrowUpDown />
-    </div>,
-    <div className="flex justify-center items-center gap-2">
-      Drivers
-      <LuArrowUpDown />
-    </div>,
-    <div className="flex justify-center items-center gap-2">
-      Assets
-      <LuArrowUpDown />
-    </div>,
+    "Terminals Name",
+    "Drivers",
+    "Assets",
     "Timezone",
-    <div className="flex justify-center items-center gap-2">
-      Created On (CDT)
-      <LuArrowUpDown />
-    </div>,
+    "Created On (CDT)",
     "Actions",
   ];
 
@@ -157,7 +187,7 @@ const Terminals = () => {
           {
             label: (
               <div
-                className="text-[#8E8F8F] cursor-pointer"
+                className="text-[#8E8F8F] cursor-pointer font-bold"
                 onClick={() => {
                   setEdit(true);
                   setPrevData(i);
@@ -172,7 +202,7 @@ const Terminals = () => {
           {
             label: (
               <div
-                className="text-[#F56C89] text-left cursor-pointer"
+                className="text-[#F56C89] text-left cursor-pointer font-bold"
                 onClick={() => removeHandler(i?._id)}
               >
                 Removed
@@ -190,12 +220,38 @@ const Terminals = () => {
     </Dropdown>,
   ]);
 
+  const deactiveTableHead = [
+    "Terminals Name",
+    "Drivers",
+    "Assets",
+    "Timezone",
+    "Created On (CDT)",
+    "Actions",
+  ];
+
+  const deactiveTableBody = deactiveTerminals?.data?.docs?.map((i) => [
+    <div onClick={() => navigate(`/Terminals/${i?._id}`)}> {i?.name} </div>,
+    i?.drivers?.length,
+    i?.assets?.length,
+    i?.timeZone,
+    dateFormatter(i?.createdAt),
+    <button className="activate-btn" onClick={() => activateTerminal(i?._id)}>
+      Activate
+    </button>,
+  ]);
+
+  useEffect(() => {
+    if (selectedTab) {
+      setCurrentPage(1);
+    }
+  }, [selectedTab]);
+
   return (
     <>
       <CreateTerminal
         show={Addterminal}
         handleClose={() => setAddterminal(false)}
-        fetchApi={fetchHandler}
+        fetchApi={fetchAll}
         isEdit={edit}
         prevData={prevData}
       />
@@ -212,22 +268,26 @@ const Terminals = () => {
         />
         <Loader isLoading={loading} />
 
-        {selectedTab === "Active" && (
-          <div className="mt-5">
-            <TableLayout
-              thead={activeTableHead}
-              className="vehicle-table mt-5 mb-5"
-              tbody={activeTableCody}
-            />
-
-            <Pagination
-              className={"mt-5"}
-              totalPages={data?.data?.totalPages}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          </div>
+        {selectedTab === "Active" ? (
+          <TableLayout
+            thead={activeTableHead}
+            className="vehicle-table mt-5 mb-5"
+            tbody={activeTableCody}
+          />
+        ) : (
+          <TableLayout
+            thead={deactiveTableHead}
+            className="vehicle-table mt-5 mb-5"
+            tbody={deactiveTableBody}
+          />
         )}
+
+        <Pagination
+          className={"mt-5"}
+          totalPages={data?.data?.totalPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
     </>
   );
