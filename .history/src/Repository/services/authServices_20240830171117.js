@@ -1,1 +1,0 @@
-import { postApi , sho } from "../Api";

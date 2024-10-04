@@ -62,6 +62,7 @@ const Newsidebar = () => {
               </div>
             )}
           </div>
+
           {open ? (
             <>
               <Link to="/Logbook">
@@ -100,6 +101,7 @@ const Newsidebar = () => {
               <Link to="/Reports">
                 <Sidebar.Item icon={report}>Reports</Sidebar.Item>
               </Link>
+
               <Link to="/Iftatrips">
                 <Sidebar.Collapse
                   icon={ifta}
@@ -127,6 +129,7 @@ const Newsidebar = () => {
                   </Link>
                 </Sidebar.Collapse>
               </Link>
+              
               <Link to="/vehicles">
                 <Sidebar.Collapse
                   icon={vehicles}
@@ -151,23 +154,11 @@ const Newsidebar = () => {
                   </Link>
                 </Sidebar.Collapse>
               </Link>
+
               <Link to="/Drivers">
                 <Sidebar.Item icon={drivers}>Drivers</Sidebar.Item>
-                {/* <Sidebar.Collapse
-            icon={drivers}
-            label="Drivers"
-            renderChevronIcon={(theme, open) => {
-              const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
-
-              return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
-            }}
-          >
-             <Link to="/DeleteDrivers">
-            <Sidebar.Item >Delete Drivers</Sidebar.Item>
-
-             </Link>
-          </Sidebar.Collapse> */}
               </Link>
+
               <Link to="/Devices">
                 <Sidebar.Collapse
                   icon={Devices}
@@ -198,6 +189,8 @@ const Newsidebar = () => {
                   </Link>
                 </Sidebar.Collapse>
               </Link>
+
+              
               <Link to="/Userroles">
                 <Sidebar.Item icon={userrole}>User Roles</Sidebar.Item>
               </Link>
