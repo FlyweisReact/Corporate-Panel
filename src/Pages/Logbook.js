@@ -15,7 +15,7 @@ import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
 import PieChart from "../Components/PieChart";
 import { returnFullName } from "../utils/utils";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const thead = [
   "Status",
@@ -161,10 +161,13 @@ const Logbook = () => {
 
   const tbody = activeDrivers?.data?.docs?.map((i) => [
     checkStatus(i),
-    <span onClick={() => navigate(`/Logbook/${i?._id}`)}>
+    <Link
+      to={`/Logbook/${i?._id}`}
+      style={{ color: "blue", textDecoration: "underline", fontWeight: "900" }}
+    >
       {returnFullName(i)}{" "}
       {i?.truck?.vehicleNumber ? `| ${i?.truck?.vehicleNumber}` : ""}
-    </span>,
+    </Link>,
     i?.location?.coordinates?.map((item) => item),
     variantGiver(i?.violations),
     <div className="border-[#1E87F0] flex justify-center items-center text-[8px] border-4 w-[47px] h-[47px] rounded-full m-auto">
@@ -184,10 +187,13 @@ const Logbook = () => {
 
   const inactiveBody = inactiveDriver?.data?.docs?.map((i) => [
     checkStatus(i),
-    <span onClick={() => navigate(`/Logbook/${i?._id}`)}>
+    <Link
+      to={`/Logbook/${i?._id}`}
+      style={{ color: "blue", textDecoration: "underline", fontWeight: "900" }}
+    >
       {returnFullName(i)}{" "}
       {i?.truck?.vehicleNumber ? `| ${i?.truck?.vehicleNumber}` : ""}
-    </span>,
+    </Link>,
     i?.location?.coordinates?.map((item) => item),
     variantGiver(i?.violations),
     <div className="border-[#1E87F0] flex justify-center items-center text-[8px] border-4 w-[47px] h-[47px] rounded-full m-auto">
@@ -207,10 +213,13 @@ const Logbook = () => {
 
   const allBody = allDrivers?.data?.docs?.map((i) => [
     checkStatus(i),
-    <span onClick={() => navigate(`/Logbook/${i?._id}`)}>
+    <Link
+      to={`/Logbook/${i?._id}`}
+      style={{ color: "blue", textDecoration: "underline", fontWeight: "900" }}
+    >
       {returnFullName(i)}{" "}
       {i?.truck?.vehicleNumber ? `| ${i?.truck?.vehicleNumber}` : ""}
-    </span>,
+    </Link>,
     i?.location?.coordinates?.map((item) => item),
     variantGiver(i?.violations),
     <div className="border-[#1E87F0] flex justify-center items-center text-[8px] border-4 w-[47px] h-[47px] rounded-full m-auto">
