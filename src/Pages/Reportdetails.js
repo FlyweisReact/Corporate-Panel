@@ -1,5 +1,5 @@
 /** @format */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PopUp } from "../Components/PopUp";
 import DateFilter from "../Components/DateFilter";
 import { CircularProgressbar } from "react-circular-progressbar";
@@ -7,6 +7,8 @@ import TableLayout from "../Components/TableLayout";
 import { AlertDateSelector } from "../Components/Modal/Modal";
 import ReactApexChart from "react-apexcharts";
 import { Dropdown } from "antd";
+import { getApi } from "../Repository/Api";
+import { dateFormatter, returnFullName } from "../utils/utils";
 
 const items = [
   {
@@ -27,6 +29,18 @@ const Reportdetails = () => {
   const [openPopUp, setOpenPopUp] = useState(false);
   const [open, setOpen] = useState();
   const value = 29;
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
+
 
   const thead = [
     "No",
@@ -39,108 +53,16 @@ const Reportdetails = () => {
     "Detail",
   ];
 
-  const tbody = [
-    [
-      "1",
-      "Overspeeding",
-      "Farhan Raja",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 81, Montgomery County, Virginia, 24087",
-      "---",
-      "View",
-    ],
-    [
-      "2",
-      "Overspeeding",
-      "Surrinder Singh",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 64, Boyd County, Kentucky, 41129",
-      "---",
-      "View",
-    ],
-    [
-      "3",
-      "Overspeeding",
-      "Farhan Raja",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 81, Montgomery County, Virginia, 24087",
-      "---",
-      "View",
-    ],
-    [
-      "4",
-      "Overspeeding",
-      "Surrinder Singh",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 64, Boyd County, Kentucky, 41129",
-      "---",
-      "View",
-    ],
-    [
-      "5",
-      "Overspeeding",
-      "Farhan Raja",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 81, Montgomery County, Virginia, 24087",
-      "---",
-      "View",
-    ],
-    [
-      "6",
-      "Overspeeding",
-      "Surrinder Singh",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 64, Boyd County, Kentucky, 41129",
-      "---",
-      "View",
-    ],
-    [
-      "7",
-      "Overspeeding",
-      "Farhan Raja",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 81, Montgomery County, Virginia, 24087",
-      "---",
-      "View",
-    ],
-    [
-      "8",
-      "Overspeeding",
-      "Surrinder Singh",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 64, Boyd County, Kentucky, 41129",
-      "---",
-      "View",
-    ],
-    [
-      "9",
-      "Overspeeding",
-      "Surrinder Singh",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 64, Boyd County, Kentucky, 41129",
-      "---",
-      "View",
-    ],
-    [
-      "10",
-      "Overspeeding",
-      "Surrinder Singh",
-      78618,
-      "Sep 04, 2024 | 1:38 AM",
-      "I 64, Boyd County, Kentucky, 41129",
-      "---",
-      "View",
-    ],
-  ];
+  const tbody = data?.data?.docs?.map((i, index) => [
+    index + 1,
+    i?.violations,
+    returnFullName(i?.driver),
+    i?.truck?.vehicleNumber,
+    i?.date && dateFormatter(i?.date),
+    i.startLocation,
+    "---",
+    "View",
+  ]);
 
   // --- overspeeding chart
   const [series] = useState([100]);

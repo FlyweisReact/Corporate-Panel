@@ -1,13 +1,15 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
 import Helmet from "../../Components/Helmet";
 import { Tabs } from "../../Components/HelpingComponents";
 import { AlertDateSelector } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
+import { getApi } from "../../Repository/Api";
+import { returnFullName } from "../../utils/utils";
 
 const items = [
   {
@@ -54,6 +56,18 @@ const salesData = [
 const TripHistory = () => {
   const [open, setOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("Drivers");
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
+
 
   const tempSeries = [
     {
@@ -86,19 +100,17 @@ const TripHistory = () => {
     "Safety Events",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Farhan Raja",
-      5,
-      "17h 47m",
-      "508 ml",
-      "52.22 mph",
-      "0",
-      "0.0%",
-      "2",
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    '---',
+    i?.workedToday,
+    i?.distance,
+    "---",
+    i?.eldFuelRecord?.[0]?.idleTimeHours,
+    "---",
+    "---",
+  ]);
 
   const tabsOptions = [
     {

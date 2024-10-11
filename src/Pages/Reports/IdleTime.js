@@ -1,10 +1,12 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "../../Components/Helmet";
 import { AlertDateSelector } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
+import { getApi } from "../../Repository/Api";
+import { returnFullName } from "../../utils/utils";
 
 const items = [
   {
@@ -15,6 +17,18 @@ const items = [
 
 const IdleTime = () => {
   const [open, setOpen] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
+
 
   const thead = [
     <input type="checkbox" />,
@@ -25,6 +39,16 @@ const IdleTime = () => {
     "idle Time",
     "Idle Events",
   ];
+
+  const tbody = data?.data?.docs?.map((i) => [
+    <input type="checkbox" className="checkbox" />,
+    returnFullName(i?.driver),
+    i?.milesDriven ,
+    "---",
+    "---",
+    i?.eldFuelRecord?.[0]?.idleTimeHours,
+    "---"
+  ]);
 
   return (
     <section className="dormancy-report-page p-5">
@@ -54,7 +78,7 @@ const IdleTime = () => {
         </Dropdown>
       </div>
       <hr className="mt-5 mb-5" />
-      <TableLayout thead={thead} className="vehicle-table mt-5" />
+      <TableLayout thead={thead} tbody={tbody} className="vehicle-table mt-5" />
     </section>
   );
 };

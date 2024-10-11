@@ -1,13 +1,15 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts } from "../../Components/ApexCharts/Charts";
 import Helmet from "../../Components/Helmet";
 import { CustomProgressBar } from "../../Components/HelpingComponents";
 import { AlertDateSelector } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
+import { getApi } from "../../Repository/Api";
+import { returnFullName } from "../../utils/utils";
 
 const items = [
   {
@@ -22,6 +24,17 @@ const items = [
 
 const HOS = () => {
   const [open, setOpen] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const tempSeries = [
     {
@@ -55,25 +68,23 @@ const HOS = () => {
     "Duty",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Abdul Muqeet",
-      <div
-        className="w-[70px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto"
-        style={{ fontWeight: "900" }}
-      >
-        100
-      </div>,
-      "0 mi",
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    <div
+      className="w-[70px] h-[34px] bg-[#EDF8F0] rounded-xl text-[#18A88C] flex justify-center gap-1 items-center m-auto"
+      style={{ fontWeight: "900" }}
+    >
+      ---
+    </div>,
+    i?.milesDriven,
+    i?.violations,
+    '---',
+    '---',
+    '---',
+    i?.driver?.cycle,
+    i?.driver?.dutyStatus,
+  ]);
   return (
     <section className="p-5">
       <Helmet title={"HOS Report"} />

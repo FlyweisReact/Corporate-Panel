@@ -1,11 +1,13 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "../../Components/Helmet";
 import { AlertDateSelector, EditThreshold } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
 import { Dropdown } from "antd";
 import { Tabs } from "../../Components/HelpingComponents";
+import { getApi } from "../../Repository/Api";
+import { returnFullName } from "../../utils/utils";
 
 const items = [
   {
@@ -18,6 +20,17 @@ const FuelEfficiency = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
   const [selectedTab, setSelectedTab] = useState("Drivers");
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const thead = [
     <input type={"checkbox"} />,
@@ -78,6 +91,16 @@ const FuelEfficiency = () => {
     );
   };
 
+  const driverBody = data?.data?.docs?.map((i) => [
+    <input type="checkbox" className="checkbox" />,
+    returnFullName(i?.driver),
+    i?.milesDriven,
+    i?.eldEngineRecord?.[0]?.drivingFuelEconomy_LPerKm,
+    "---",
+    "---",
+    i?.eldFuelRecord?.[0]?.idleTimeHours,
+  ]);
+
   return (
     <section className="dormancy-report-page p-5">
       <Helmet title={"Fuel Efficiency"} />
@@ -91,7 +114,11 @@ const FuelEfficiency = () => {
         ExtraComponent={ExtraComponent}
       />
       {selectedTab === "Drivers" ? (
-        <TableLayout thead={driverThead} className="vehicle-table mt-5" />
+        <TableLayout
+          thead={driverThead}
+          tbody={driverBody}
+          className="vehicle-table mt-5"
+        />
       ) : (
         <TableLayout thead={thead} className="vehicle-table mt-5" />
       )}

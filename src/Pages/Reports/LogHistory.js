@@ -1,40 +1,54 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "../../Components/Helmet";
 import { AlertDateSelector, EditThreshold } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, PieChart } from "../../Components/ApexCharts/Charts";
+import { getApi } from "../../Repository/Api";
+import { returnFullName } from "../../utils/utils";
 
 const LogHistory = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
+
 
   const pieSeries = [100];
-  const pieLabel = ["Approved" , "Rejected" , "Canceled" , "Pending"];
+  const pieLabel = ["Approved", "Rejected", "Canceled", "Pending"];
 
   const thead = [
     <input type={"checkbox"} />,
     "Driver Name",
-    "Miles Driven" ,
-    "Avg Edits/1000 mi" ,
-    "Approved Edits" ,
-    "Pending Edits" ,
-    "Rejected Edits" ,
-    "Cancelled Edits"
+    "Miles Driven",
+    "Avg Edits/1000 mi",
+    "Approved Edits",
+    "Pending Edits",
+    "Rejected Edits",
+    "Cancelled Edits",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      "Abdul Muqeet",
-      '451 mi',
-      2.2 ,
-      1,
-      0 ,0 ,0
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    returnFullName(i?.driver),
+    i?.milesDriven,
+    '---',
+    '---',
+    '---',
+    '---',
+    '---',
+  ]);
 
   const value = 99.17;
 

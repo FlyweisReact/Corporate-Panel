@@ -1,11 +1,12 @@
 /** @format */
 
 import { Dropdown } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { AreaCharts, BarChart } from "../../Components/ApexCharts/Charts";
 import { AlertDateSelector, EditHour } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
+import { getApi } from "../../Repository/Api";
 
 const items = [
   {
@@ -52,6 +53,19 @@ const salesData = [
 const Utilization = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
+
+  console.log(data?.data?.docs);
 
   const tempSeries = [
     {
@@ -83,21 +97,19 @@ const Utilization = () => {
     "Total Miles Driven",
   ];
 
-  const body = [
-    [
-      <input type={"checkbox"} className="checkbox" />,
-      78616,
-      "Truck",
-      "42%",
-      "5h 40m 0s",
-      <span onClick={() => setShow(true)}>
-        24h{" "}
-        <i className="fa-solid fa-pen-to-square" style={{ color: "blue" }}></i>
-      </span>,
-      "34h",
-      "528 mi",
-    ],
-  ];
+  const body = data?.data?.docs?.map((i) => [
+    <input type={"checkbox"} className="checkbox" />,
+    i?.truck?.vehicleNumber,
+    i?.truck?.vehicleType,
+    "---",
+    "---",
+    <span onClick={() => setShow(true)}>
+      {i?.workedToday} {" "}
+      <i className="fa-solid fa-pen-to-square" style={{ color: "blue" }}></i>
+    </span>,
+    i?.workedToday,
+    i?.milesDriven,
+  ]);
 
   return (
     <section className="p-5">

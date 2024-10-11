@@ -1,10 +1,11 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "../../Components/Helmet";
 import { AlertDateSelector, EditThreshold } from "../../Components/Modal/Modal";
 import TableLayout from "../../Components/TableLayout";
 import { Dropdown } from "antd";
+import { getApi } from "../../Repository/Api";
 
 const items = [
   {
@@ -16,6 +17,17 @@ const items = [
 const ExternalBattery = () => {
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
+
+  const fetchHandler = () => {
+    getApi("api/v1/corporate/AllElogForm", {
+      setResponse: setData,
+    });
+  };
+
+  useEffect(() => {
+    fetchHandler();
+  }, []);
 
   const thead = [
     <input type={"checkbox"} />,
@@ -30,6 +42,11 @@ const ExternalBattery = () => {
     "Max Charge",
     "Min Charge",
   ];
+
+  const tbody = data?.data?.docs?.map((i) => [
+    i?.truck?.vehicleNumber,
+    i?.truck?.vehicleType,
+  ]);
 
   return (
     <section className="dormancy-report-page p-5">
@@ -63,7 +80,7 @@ const ExternalBattery = () => {
 
       <hr className="mt-5 mb-5" />
 
-      <TableLayout thead={thead} className="vehicle-table mt-5" />
+      <TableLayout thead={thead} className="vehicle-table mt-5" tbody={tbody} />
     </section>
   );
 };
