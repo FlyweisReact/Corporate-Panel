@@ -51,6 +51,7 @@ const LogbookDetails = () => {
   });
   const [data, setData] = useState({});
   const [detail, setDetails] = useState(null);
+  const [loogBookData, setLoogBookData] = useState(null);
 
   // fetch driver details
   const fetchHandler = useCallback(() => {
@@ -109,7 +110,12 @@ const LogbookDetails = () => {
     }
   }, [id]);
 
-  console.log(detail?.data?.docs?.[0]);
+  useEffect(() => {
+    if (detail) {
+      setLoogBookData(detail?.data?.docs?.reverse()?.[0]);
+    }
+  }, [detail]);
+
 
   return (
     <>
@@ -165,14 +171,13 @@ const LogbookDetails = () => {
                 <p>Start Location</p>
                 <p className="text-[#000] font-[900]">
                   {" "}
-                  {detail?.data?.docs?.[0]?.startLocation}{" "}
+                  {loogBookData?.startLocation}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Start / End Odometer</p>
                 <p className="text-[#000] font-[900]">
-                  {detail?.data?.docs?.[0]?.startOdometer} /{" "}
-                  {detail?.data?.docs?.[0]?.endOdometer}
+                  {loogBookData?.startOdometer} / {loogBookData?.endOdometer}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
@@ -183,32 +188,30 @@ const LogbookDetails = () => {
                 <p>Shipping ID</p>
                 <p className="text-[#000] font-[900]">
                   {" "}
-                  {detail?.data?.docs?.[0]?.shippingId}{" "}
+                  {loogBookData?.shippingId}{" "}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Destination</p>
                 <p className="text-[#000] font-[900]">
-                  {detail?.data?.docs?.[0]?.destinationLocation}
+                  {loogBookData?.destinationLocation}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Miles Today</p>
                 <p className="text-[#000] font-[900]">
                   {" "}
-                  {detail?.data?.docs?.[0]?.milesToday}
+                  {loogBookData?.milesToday}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Truck Number</p>
-                <p className="text-[#000] font-[900]">
-                  {detail?.data?.docs?.[0]?.truck}
-                </p>
+                <p className="text-[#000] font-[900]">{loogBookData?.truck}</p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Trailer ID</p>
                 <p className="text-[#000] font-[900]">
-                  {detail?.data?.docs?.[0]?.trailerId}
+                  {loogBookData?.trailerId}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
@@ -255,10 +258,7 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Print/Display Date</p>
-                <p className="text-[#000] font-[900]">
-                  {" "}
-                  {detail?.data?.docs?.[0]?.date}{" "}
-                </p>
+                <p className="text-[#000] font-[900]"> {loogBookData?.date} </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Exempt Driver Status</p>
@@ -284,15 +284,15 @@ const LogbookDetails = () => {
                 <p>USDOT </p>
                 <p className="text-[#000] font-[900]">
                   {" "}
-                  {detail?.data?.docs?.[0]?.dotNumber}
+                  {loogBookData?.dotNumber}
                 </p>
               </div>
             </div>
 
             <div className="signature-btn">
               <p className="text-[#8E8F8F]">Signature</p>
-              {detail?.data?.docs?.[0]?.signature ? (
-                detail?.data?.docs?.[0]?.signature
+              {loogBookData?.signature ? (
+                loogBookData?.signature
               ) : (
                 <div className="flex items-center justify-center border border-dashed border-[#939eb9] gap-2 text-[#F56C89] p-4 bg-[#F3F5FB] mt-2 rounded-xl font-[700]">
                   <img src="../Vector2.png" alt="" className="h-fit w-fit" />
@@ -350,17 +350,17 @@ const LogbookDetails = () => {
                 <hr style={{ margin: "16px 0px" }} />
                 <div>
                   <p>Cycle Left</p>
-                  <p> {detail?.data?.docs?.[0]?.cycleLeft} </p>
+                  <p> {loogBookData?.cycleLeft} </p>
                   <hr style={{ margin: "16px 0px" }} />
                 </div>
                 <div>
                   <p>Available Today</p>
-                  <p>{detail?.data?.docs?.[0]?.availableToday}</p>
+                  <p>{loogBookData?.availableToday}</p>
                   <hr style={{ margin: "16px 0px" }} />
                 </div>
                 <div>
                   <p>Worked Today</p>
-                  <p>{detail?.data?.docs?.[0]?.workedToday}</p>
+                  <p>{loogBookData?.workedToday}</p>
                   <hr style={{ margin: "16px 0px" }} />
                 </div>
               </div>
