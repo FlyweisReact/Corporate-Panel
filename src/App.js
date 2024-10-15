@@ -57,6 +57,7 @@ import TripHistory from "./Pages/Reports/TripHistory";
 import DriveTime from "./Pages/Reports/DriveTime";
 import Utilization from "./Pages/Reports/Utilization";
 import ReportHistory from "./Pages/Reports/ReportHistory";
+import Dummy from "./Pages/Dummy";
 
 const router = createBrowserRouter([
   {
@@ -170,6 +171,10 @@ const router = createBrowserRouter([
       {
         path: "/reports/report-history",
         element: <ReportHistory />,
+      },
+      {
+        path: "/dummy",
+        element: <Dummy />,
       },
     ],
   },

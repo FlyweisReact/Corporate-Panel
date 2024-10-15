@@ -33,6 +33,23 @@ const dateFormatter = (date) => {
   );
 };
 
+export function convertMinutesToTimeFormat(minutes) {
+  if (isNaN(minutes) || minutes < 0) {
+    return "00:00:00";
+  }
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  const seconds = 0;
+  const formattedTime =
+    String(hours).padStart(2, "0") +
+    ":" +
+    String(remainingMinutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
+
+  return formattedTime;
+}
+
 const returnFullName = (i) => {
   if (i?.fullName) {
     return i.fullName;

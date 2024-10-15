@@ -96,6 +96,8 @@ const endPoints = {
   },
   logbook: {
     getLogbookByDriver: (id) => `api/v1/corporate/AllElogForm?driver=${id}`,
+    getDriverLoogbook: ({ id, date }) =>
+      `api/v1/user/getDriverLogByDriverId?driver=${id}&date=${date}&limit=1000`,
   },
 };
 

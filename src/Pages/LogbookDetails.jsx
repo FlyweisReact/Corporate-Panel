@@ -7,7 +7,7 @@ import { EditElog, EditElogEvent } from "../Components/Modal/Modal";
 import { useParams } from "react-router-dom";
 import { getApi } from "../Repository/Api";
 import endPoints from "../Repository/apiConfig";
-import { returnFullName } from "../utils/utils";
+import { returnFullName, convertMinutesToTimeFormat } from "../utils/utils";
 
 const returnNickName = (data) => {
   if (data?.firstName || data?.lastName) {
@@ -17,14 +17,23 @@ const returnNickName = (data) => {
   }
 };
 
+const statusMapping = {
+  On: 1,
+  D: 2,
+  Off: 3,
+  SB: 4,
+};
+
 const LogbookDetails = () => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
-  const [chartState] = useState({
+
+  const [chartState, setChartState] = useState({
     series: [
       {
-        data: [34, 44, 54, 21, 12, 43, 33, 23, 66, 66, 58],
+        name: "Status",
+        data: [],
       },
     ],
     options: {
@@ -34,14 +43,36 @@ const LogbookDetails = () => {
       },
       stroke: {
         curve: "stepline",
+        width: 2,
       },
       dataLabels: {
         enabled: false,
       },
       title: {
-        text: "Apr 05, 2024",
+        text: "Oct 14, 2024",
         align: "left",
       },
+
+      xaxis: {
+        title: {
+          text: "",
+        },
+        labels: {
+          formatter: (val) => `${val}`, // Customize the time labels if needed
+        },
+      },
+      yaxis: {
+        title: {
+          text: "",
+        },
+        categories: ["S", "ON", "OFF", "SB"], // Fixed status values on the y-axis
+        labels: {
+          formatter: function (val) {
+            return val; // Show the status labels as they are
+          },
+        },
+      },
+
       markers: {
         hover: {
           sizeOffset: 4,
@@ -49,9 +80,26 @@ const LogbookDetails = () => {
       },
     },
   });
+
   const [data, setData] = useState({});
   const [detail, setDetails] = useState(null);
   const [loogBookData, setLoogBookData] = useState(null);
+  const [graph, setGraph] = useState(null);
+
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  useEffect(() => {
+    if (id && formattedDate) {
+      getApi(endPoints.logbook.getDriverLoogbook({ id, date: "14-10-2024" }), {
+        setResponse: setGraph,
+      });
+    }
+  }, [formattedDate, id]);
 
   // fetch driver details
   const fetchHandler = useCallback(() => {
@@ -64,6 +112,78 @@ const LogbookDetails = () => {
     fetchHandler();
   }, [fetchHandler]);
 
+  useEffect(() => {
+    if (graph) {
+      const timeArray = graph?.data?.docs?.map((item) => {
+        const date = new Date(item.fromTime);
+        return isNaN(date.getTime()) ? null : date;
+      });
+
+      const statusArr = graph?.data?.docs?.map(
+        (item) => statusMapping[item.dutyStatus]
+      );
+
+      // Prepare data for the chart
+      const chartData = statusArr.map((status, index) => ({
+        x: timeArray[index], // Use fromTime for x-axis
+        y: status,
+      }));
+
+      // Check if the last object has toTime and is valid
+      const lastItem = graph?.data?.docs[graph.data.docs.length - 1];
+      const lastToTime = lastItem ? new Date(lastItem.toTime) : null;
+
+      if (lastToTime && !isNaN(lastToTime.getTime())) {
+        const lastStatus = statusMapping[lastItem.dutyStatus]; // Get the last status
+        // Add last toTime and status to the chart data
+        chartData.push({
+          x: lastToTime,
+          y: lastStatus,
+        });
+      }
+
+      setChartState((prevState) => ({
+        ...prevState,
+        series: [
+          {
+            data: chartData, // Use prepared chart data
+          },
+        ],
+        options: {
+          ...prevState.options,
+          yaxis: {
+            min: 1,
+            max: 4,
+            title: {
+              text: "",
+            },
+            labels: {
+              formatter: function (value) {
+                const statusLabels = { 2: "D", 1: "On", 3: "Off", 4: "SB" };
+                return statusLabels[value];
+              },
+            },
+          },
+          xaxis: {
+            title: {
+              text: "",
+            },
+            labels: {
+              formatter: function (value) {
+                const date = new Date(value);
+                return date.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+              },
+            },
+          },
+        },
+      }));
+    }
+  }, [graph]);
+
   const head = [
     "Status",
     <div className="text-start">Duration</div>,
@@ -71,36 +191,22 @@ const LogbookDetails = () => {
     "Comment",
     "Actions",
   ];
-  const body = [
-    [
-      <div className="bg-[#EDF8F0] text-[#1DBC60] w-[60px]  px-4 py-1 rounded-2xl m-auto font-[900]">
-        ON
-      </div>,
-      <div className="text-start">
-        <p className="font-[900]">On Duty</p>
-        00:00:00 | 02hrs 35mins
-      </div>,
-      "Bigelow, MN, 56117",
-      "drive",
-      <span onClick={() => setOpen(true)}>
-        <i className="fa-solid fa-pencil text-[blue] cursor-pointer"></i>
-      </span>,
-    ],
-    [
-      <div className="bg-[#EDF8F0] text-[#1DBC60] w-[60px]  px-4 py-1 rounded-2xl m-auto font-[900]">
-        OFF
-      </div>,
-      <div className="text-start">
-        <p className="font-[900]">Off Duty</p>
-        07:24:35 | 01hr 52mins
-      </div>,
-      "Bigelow, MN, 56117",
-      "No Comment ",
-      <span onClick={() => setOpen(true)}>
-        <i className="fa-solid fa-pencil text-[blue] cursor-pointer"></i>
-      </span>,
-    ],
-  ];
+  const body = graph?.data?.docs?.map((i) => [
+    <div
+      className={`bg-[#EDF8F0] text-[#1DBC60] w-[60px]  px-4 py-1 rounded-2xl m-auto font-[900]`}
+    >
+      {i?.status}
+    </div>,
+    <div className="text-start">
+      <p className="font-[900]"> {i?.dutyStatus} </p>
+      {convertMinutesToTimeFormat(i?.totalMin)} | {i?.totalMin || 0}mins
+    </div>,
+    i?.location,
+    i?.comment,
+    <span onClick={() => setOpen(true)}>
+      <i className="fa-solid fa-pencil text-[blue] cursor-pointer"></i>
+    </span>,
+  ]);
 
   useEffect(() => {
     if (id) {
@@ -115,7 +221,6 @@ const LogbookDetails = () => {
       setLoogBookData(detail?.data?.docs?.reverse()?.[0]);
     }
   }, [detail]);
-
 
   return (
     <>
