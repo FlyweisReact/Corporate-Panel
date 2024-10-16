@@ -29,7 +29,7 @@ import Trackinglinks from "./Pages/Trackinglinks";
 import Forgetpassword from "./Components/Login/Forgetpassword";
 import Verifyemailandphone from "./Components/Login/Verifyemailandphone";
 import Verificationcode from "./Components/Login/Verificationcode";
-import LogbookDetails from "./Pages/LogbookDetails";
+import LogbookDetails from "./Pages/Logbook/LogbookDetails";
 import Location from "./Pages/Location";
 import Park from "./Pages/Park";
 import ParkedCar from "./Pages/ParkedCar";

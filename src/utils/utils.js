@@ -65,4 +65,21 @@ const LogOutHandler = (navigate) => {
   navigate("/");
 };
 
+export const getCorrectTime = (time) => {
+  const updateTime = new Date(time);
+  const timezoneOffset = updateTime?.getTimezoneOffset();
+  const adjustedTime = new Date(updateTime.getTime() + timezoneOffset * 60000);
+  return adjustedTime;
+};
+
+export const convertSecondsToHHMM = (seconds) => {
+  const totalMinutes = Math.floor(seconds / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const formattedHours = String(hours).padStart(2, '0');
+  const formattedMinutes = String(minutes).padStart(2, '0');
+
+  return `${formattedHours}:${formattedMinutes}`;
+};
+
 export { tokenSaver, dateFormatter, returnFullName, LogOutHandler };

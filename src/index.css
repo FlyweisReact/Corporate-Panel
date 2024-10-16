@@ -50,7 +50,7 @@ code {
   background-size: cover;
 }
 .underline-offset-8::after {
-  left: -8px; 
+  left: -8px;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -343,51 +343,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   text-align: center;
   border-radius: 100%;
-}
-
-.log-book .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-  border-bottom: 1px solid rgb(201, 209, 232);
-}
-.log-book .drop-content {
-  padding: 20px;
-  background-color: #f3f5fb;
-}
-.log-book .drop-content .content {
-  background-color: #fff;
-  border: 1px solid #fff;
-  border-radius: 10px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: flex-start;
-}
-.log-book .drop-content .content .all-fields {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  justify-content: space-between;
-  width: 80%;
-}
-.log-book .drop-content .content .signature-btn {
-  width: 20%;
-}
-.log-book .drop-content .content #chart {
-  width: 70%;
-}
-.log-book .drop-content .content .recap-div {
-  background-color: #e8f4ff;
-  border: 1px solid rgb(201, 209, 232);
-  border-radius: 10px;
-}
-.log-book .drop-content .content .recap-div .desc {
-  font-size: 12px;
-  font-weight: 600;
 }
 
 .trip-box-container {

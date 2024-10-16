@@ -2,12 +2,20 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import TableLayout from "../Components/TableLayout";
-import { EditElog, EditElogEvent } from "../Components/Modal/Modal";
+import TableLayout from "../../Components/TableLayout";
+import { EditElog, EditElogEvent } from "../../Components/Modal/Modal";
 import { useParams } from "react-router-dom";
-import { getApi } from "../Repository/Api";
-import endPoints from "../Repository/apiConfig";
-import { returnFullName, convertMinutesToTimeFormat } from "../utils/utils";
+import { getApi } from "../../Repository/Api";
+import endPoints from "../../Repository/apiConfig";
+import {
+  returnFullName,
+  convertMinutesToTimeFormat,
+  convertSecondsToHHMM,
+} from "../../utils/utils";
+import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
+import styles from "../../CSS/modules/Logbook.module.css";
+import { statusMapping } from "../../constant";
 
 const returnNickName = (data) => {
   if (data?.firstName || data?.lastName) {
@@ -17,18 +25,88 @@ const returnNickName = (data) => {
   }
 };
 
-const statusMapping = {
-  On: 1,
-  D: 2,
-  Off: 3,
-  SB: 4,
+const getUpcomingDate = (formattedDate, setFormattedDate) => {
+  const [day, month, year] = formattedDate.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  date.setDate(date.getDate() + 1);
+  const previousDay = String(date.getDate()).padStart(2, "0");
+  const previousMonth = String(date.getMonth() + 1).padStart(2, "0");
+  const previousYear = date.getFullYear();
+  setFormattedDate(`${previousDay}-${previousMonth}-${previousYear}`);
+};
+
+const getPreviousDay = (formattedDate, setFormattedDate) => {
+  const [day, month, year] = formattedDate.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  date.setDate(date.getDate() - 1);
+  const previousDay = String(date.getDate()).padStart(2, "0");
+  const previousMonth = String(date.getMonth() + 1).padStart(2, "0");
+  const previousYear = date.getFullYear();
+  setFormattedDate(`${previousDay}-${previousMonth}-${previousYear}`);
+};
+
+const getTodayDate = () => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const year = today.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+function formatDateString(dateString) {
+  const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day); // month is 0-indexed
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const originalDate = parseDate(dateString);
+
+  if (isNaN(originalDate)) {
+    return "";
+  }
+  return formatDate(originalDate);
+}
+
+const RecapContainer = ({ recapData }) => {
+  const dateFormatter = (date) => {
+    const splitData = date?.split("-");
+    const getMonth = splitData?.[1];
+    const getDay = splitData?.[2];
+    const hasAll = getMonth && getDay;
+    if (hasAll) {
+      return `${getMonth}/${getDay}`;
+    }
+  };
+  return recapData?.data?.map((item, index) => (
+    <div className="flex justify-between" key={index}>
+      <p className={styles.desc}> {dateFormatter(item?.date)} </p>
+      <p className={styles.desc}>
+        {" "}
+        {item?.totalSec && convertSecondsToHHMM(item?.totalSec)}{" "}
+      </p>
+    </div>
+  ));
 };
 
 const LogbookDetails = () => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
-
+  const [data, setData] = useState({});
+  const [detail, setDetails] = useState(null);
+  const [loogBookData, setLoogBookData] = useState(null);
+  const [graph, setGraph] = useState(null);
+  const [formattedDate, setFormattedDate] = useState(getTodayDate);
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [recapData, setRecapData] = useState(null);
   const [chartState, setChartState] = useState({
     series: [
       {
@@ -49,7 +127,7 @@ const LogbookDetails = () => {
         enabled: false,
       },
       title: {
-        text: "Oct 14, 2024",
+        text: "",
         align: "left",
       },
 
@@ -81,27 +159,26 @@ const LogbookDetails = () => {
     },
   });
 
-  const [data, setData] = useState({});
-  const [detail, setDetails] = useState(null);
-  const [loogBookData, setLoogBookData] = useState(null);
-  const [graph, setGraph] = useState(null);
+  const fetchDetails = useCallback(() => {
+    getApi(endPoints.logbook.getDriverLoogbook({ id, date: formattedDate }), {
+      setResponse: setGraph,
+    });
+  }, [id, formattedDate]);
 
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  useEffect(() => {
+    if (id) {
+      getApi(endPoints.logbook.getRecap(id), {
+        setResponse: setRecapData,
+      });
+    }
+  }, [id]);
 
   useEffect(() => {
     if (id && formattedDate) {
-      getApi(endPoints.logbook.getDriverLoogbook({ id, date: "14-10-2024" }), {
-        setResponse: setGraph,
-      });
+      fetchDetails();
     }
-  }, [formattedDate, id]);
+  }, [formattedDate, id, fetchDetails]);
 
-  // fetch driver details
   const fetchHandler = useCallback(() => {
     getApi(endPoints.drivers.getDriverDetail(id), {
       setResponse: setData,
@@ -123,19 +200,15 @@ const LogbookDetails = () => {
         (item) => statusMapping[item.dutyStatus]
       );
 
-      // Prepare data for the chart
       const chartData = statusArr.map((status, index) => ({
-        x: timeArray[index], // Use fromTime for x-axis
-        y: status,
+        x: timeArray[index],
+        y: status ? status : 3,
       }));
 
-      // Check if the last object has toTime and is valid
       const lastItem = graph?.data?.docs[graph.data.docs.length - 1];
       const lastToTime = lastItem ? new Date(lastItem.toTime) : null;
-
       if (lastToTime && !isNaN(lastToTime.getTime())) {
-        const lastStatus = statusMapping[lastItem.dutyStatus]; // Get the last status
-        // Add last toTime and status to the chart data
+        const lastStatus = statusMapping[lastItem.dutyStatus];
         chartData.push({
           x: lastToTime,
           y: lastStatus,
@@ -146,11 +219,15 @@ const LogbookDetails = () => {
         ...prevState,
         series: [
           {
+            name: "Status",
             data: chartData, // Use prepared chart data
           },
         ],
         options: {
           ...prevState.options,
+          title: {
+            text: formatDateString(formattedDate),
+          },
           yaxis: {
             min: 1,
             max: 4,
@@ -203,7 +280,12 @@ const LogbookDetails = () => {
     </div>,
     i?.location,
     i?.comment,
-    <span onClick={() => setOpen(true)}>
+    <span
+      onClick={() => {
+        setSelectedLog(i);
+        setOpen(true);
+      }}
+    >
       <i className="fa-solid fa-pencil text-[blue] cursor-pointer"></i>
     </span>,
   ]);
@@ -222,12 +304,44 @@ const LogbookDetails = () => {
     }
   }, [detail]);
 
+  // Function to format date from DD-MM-YYYY to YYYY-MM-DD
+  const inputDate = (date) => {
+    if (!date) {
+      return ""; // Ensure a default return value
+    }
+    const split = date?.split("-");
+    const day = split?.[0];
+    const month = split?.[1];
+    const year = split?.[2];
+    return `${year}-${month}-${day}`; // Return in YYYY-MM-DD format
+  };
+
+  // Function to handle date updates from input
+  const updateDateHandler = (date) => {
+    console.log("date", date);
+    const split = date?.split("-");
+    const year = split?.[0]; // Correct index for year
+    const month = split?.[1];
+    const day = split?.[2];
+    setFormattedDate(`${day}-${month}-${year}`); // Set date in DD-MM-YYYY format
+  };
+
   return (
     <>
       <EditElog show={openModal2} handleClose={() => setOpenModal2(false)} />
-      <EditElogEvent show={open} handleClose={() => setOpen(false)} />
-      <div className="log-book mb-3">
-        <div className="header">
+      <EditElogEvent
+        show={open}
+        handleClose={() => setOpen(false)}
+        title={`${returnFullName(data?.data)} /  ${formatDateString(
+          formattedDate
+        )}`}
+        date={formatDateString(formattedDate)}
+        graph={graph}
+        data={selectedLog}
+        fetchDetails={fetchDetails}
+      />
+      <div className={`mb-3`}>
+        <div className={styles.log_header}>
           <div className="flex items-center gap-3">
             <p className="font-[700] w-[40px]">{returnNickName(data?.data)}</p>
             <div>
@@ -246,13 +360,14 @@ const LogbookDetails = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className={styles.btn_container}>
             <div className="relative w-[180px] rounded-md ">
               <input
                 className="placeholder: ml-2 block w-[160px] h-[45px] bg-[#F9F9F9] rounded-xl border-0 py-1.5 pr-4 text-gray-900  ring-gray-300 placeholder:text-gray-400  sm:text-sm  sm:leading-6
-                
                 border border-1 border-[#8E8F8F]"
                 type="date"
+                value={inputDate(formattedDate)} // Pass formatted date to input
+                onChange={(e) => updateDateHandler(e.target.value)} // Update handler on change
               />
             </div>
             <div
@@ -269,9 +384,9 @@ const LogbookDetails = () => {
           </div>
         </div>
 
-        <div className="drop-content">
-          <div className="content">
-            <div className="all-fields">
+        <div className={styles.drop_content}>
+          <div className={styles.content}>
+            <div className={styles.all_fields}>
               <div className="text-[#8E8F8F]">
                 <p>Start Location</p>
                 <p className="text-[#000] font-[900]">
@@ -394,7 +509,7 @@ const LogbookDetails = () => {
               </div>
             </div>
 
-            <div className="signature-btn">
+            <div className={styles.signature_btn}>
               <p className="text-[#8E8F8F]">Signature</p>
               {loogBookData?.signature ? (
                 loogBookData?.signature
@@ -407,14 +522,36 @@ const LogbookDetails = () => {
             </div>
           </div>
 
-          <div className="content mt-5">
-            <div id="chart">
-              <ReactApexChart
-                options={chartState.options}
-                series={chartState.series}
-                type="line"
-                height={350}
-              />
+          <div className={`${styles.content} mt-5`}>
+            <div className={styles.chart}>
+              <div className={styles.chart_container}>
+                <ReactApexChart
+                  options={chartState.options}
+                  series={graph?.data?.docs ? chartState.series : []}
+                  type="line"
+                  height={350}
+                />
+                <div className={styles.date_handler}>
+                  <div
+                    className={styles.go_back}
+                    onClick={() =>
+                      getPreviousDay(formattedDate, setFormattedDate)
+                    }
+                  >
+                    <IoIosArrowBack size={16} />
+                  </div>
+                  {getTodayDate() !== formattedDate && (
+                    <div
+                      className={styles.go_forward}
+                      onClick={() =>
+                        getUpcomingDate(formattedDate, setFormattedDate)
+                      }
+                    >
+                      <IoIosArrowForward size={16} />
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <TableLayout
                 thead={head}
@@ -422,35 +559,14 @@ const LogbookDetails = () => {
                 tbody={body}
               />
             </div>
-            <div className="px-6 py-4 w-[18vw] bg-[#E8F4FF] recap-div">
+            <div
+              className={`px-6 py-4 w-[18vw] bg-[#E8F4FF] ${styles.recap_div}`}
+            >
               <p>Recap</p>
 
               <div className="mt-4 text-[#858B9A]">
                 <div className="flex flex-col gap-4 pr-3">
-                  <div className="flex justify-between">
-                    <p className="desc">12/06</p>
-                    <p className="desc">03:07</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="desc">12/05</p>
-                    <p className="desc">05:13</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="desc">12/04</p>
-                    <p className="desc">11:46</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="desc">12/03</p>
-                    <p className="desc">03:28</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="desc">12/02</p>
-                    <p className="desc">03:28</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="desc">12/01</p>
-                    <p className="desc">03:28</p>
-                  </div>
+                  <RecapContainer recapData={recapData} />
                 </div>
                 <hr style={{ margin: "16px 0px" }} />
                 <div>

@@ -8,10 +8,15 @@ import tickmark from "../../Assets/Vechicledetail/vihiclegallary.svg";
 import ReactApexChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
 import profile from "../../Assets/Header/profile.svg";
-import { LogOutHandler, returnFullName } from "../../utils/utils";
+import {
+  getCorrectTime,
+  LogOutHandler,
+  returnFullName,
+} from "../../utils/utils";
 import { logo } from "../../Assets";
 import DateFilter from "../DateFilter";
 import { IoCloseSharp } from "react-icons/io5";
+import { statusMapping } from "../../constant";
 
 const CreateNewUser = ({ handleClose, show, fetchApi }) => {
   const [firstName, setFirstName] = useState("");
@@ -2506,6 +2511,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
       cargoType,
       breakCycle,
       timeZone,
+      cycleInSec : "252000"
     };
     putApi(endPoints.drivers.updateDriver(data?._id), payload, {
       additionalFunctions: [() => setStep(step + 1)],
@@ -3382,11 +3388,20 @@ const EditElog = ({ show, handleClose }) => {
   );
 };
 
-const EditElogEvent = ({ show, handleClose }) => {
-  const [chartState] = useState({
+const EditElogEvent = ({
+  show,
+  handleClose,
+  title,
+  graph,
+  date,
+  data,
+  fetchDetails,
+}) => {
+  const [chartState, setChartState] = useState({
     series: [
       {
-        data: [34, 44, 54, 21, 12, 43, 33, 23, 66, 66, 58],
+        name: "Status",
+        data: [],
       },
     ],
     options: {
@@ -3396,6 +3411,7 @@ const EditElogEvent = ({ show, handleClose }) => {
       },
       stroke: {
         curve: "stepline",
+        width: 2,
       },
       dataLabels: {
         enabled: false,
@@ -3404,6 +3420,27 @@ const EditElogEvent = ({ show, handleClose }) => {
         text: "",
         align: "left",
       },
+
+      xaxis: {
+        title: {
+          text: "",
+        },
+        labels: {
+          formatter: (val) => `${val}`, // Customize the time labels if needed
+        },
+      },
+      yaxis: {
+        title: {
+          text: "",
+        },
+        categories: ["S", "ON", "OFF", "SB"], // Fixed status values on the y-axis
+        labels: {
+          formatter: function (val) {
+            return val; // Show the status labels as they are
+          },
+        },
+      },
+
       markers: {
         hover: {
           sizeOffset: 4,
@@ -3411,11 +3448,171 @@ const EditElogEvent = ({ show, handleClose }) => {
       },
     },
   });
+  const [dutyStatus, setDutyStatus] = useState("");
+  const [fromTime, setFromTime] = useState(null);
+  const [toTime, setToTime] = useState(null);
+  const [comment, setComment] = useState("");
+  const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (graph && show) {
+      const timeArray = graph?.data?.docs?.map((item) => {
+        const date = new Date(item.fromTime);
+        return isNaN(date.getTime()) ? null : date;
+      });
+
+      const statusArr = graph?.data?.docs?.map(
+        (item) => statusMapping[item.dutyStatus]
+      );
+
+      const chartData = statusArr.map((status, index) => ({
+        x: timeArray[index],
+        y: status,
+      }));
+
+      const lastItem = graph?.data?.docs[graph.data.docs.length - 1];
+      const lastToTime = lastItem ? new Date(lastItem.toTime) : null;
+
+      if (lastToTime && !isNaN(lastToTime.getTime())) {
+        const lastStatus = statusMapping[lastItem.dutyStatus];
+        chartData.push({
+          x: lastToTime,
+          y: lastStatus,
+        });
+      }
+
+      setChartState((prevState) => ({
+        ...prevState,
+        series: [
+          {
+            data: chartData, // Use prepared chart data
+          },
+        ],
+        options: {
+          ...prevState.options,
+          title: {
+            text: date,
+          },
+          yaxis: {
+            min: 1,
+            max: 4,
+            title: {
+              text: "",
+            },
+            labels: {
+              formatter: function (value) {
+                const statusLabels = { 2: "D", 1: "On", 3: "Off", 4: "SB" };
+                return statusLabels[value];
+              },
+            },
+          },
+          xaxis: {
+            title: {
+              text: "",
+            },
+            labels: {
+              formatter: function (value) {
+                const date = new Date(value);
+                return date.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+              },
+            },
+          },
+        },
+      }));
+    }
+  }, [graph, show]);
+
+  const formatTimeHandler = (time, setState) => {
+    const originalData = new Date(time);
+    const year = originalData.getUTCFullYear();
+    const month = String(originalData.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(originalData.getUTCDate()).padStart(2, "0");
+    const hours = String(originalData.getHours()).padStart(2, "0");
+    const minutes = String(originalData.getMinutes()).padStart(2, "0");
+    const seconds = String(originalData.getSeconds()).padStart(2, "0");
+    const milliseconds = String(originalData.getMilliseconds()).padStart(
+      3,
+      "0"
+    );
+    const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
+    if (typeof time !== "string") {
+      console.warn("Invalid time input:", time);
+      return "";
+    }
+    const splitTime = isoString?.split("T")?.[1];
+    const slicedTime = splitTime?.slice(0, 5);
+    setState(`${slicedTime}:00.000Z`);
+  };
+
+  useEffect(() => {
+    if (show && data) {
+      if (data?.fromTime) {
+        formatTimeHandler(data?.fromTime, setFromTime);
+      }
+      if (data?.toTime) {
+        formatTimeHandler(data?.toTime, setToTime);
+      }
+
+      setComment(data?.comment);
+      setDutyStatus(data?.dutyStatus);
+      setLocation(data?.location);
+    }
+  }, [show && data]);
+
+  const convertDateFormat = (dateString) => {
+    if(!dateString){
+      return ;
+    }
+    const [day, month, year] = dateString?.split("-");
+    return `${year}-${month}-${day}T`;
+  };
+
+  const handleFromTimeChange = (newTime) => {
+    const updatedTime = `${newTime}:00.000Z`;
+    setFromTime(updatedTime);
+  };
+
+  const handleToTimeChange = (newTime) => {
+    const updatedTime = `${newTime}:00.000Z`;
+    setToTime(updatedTime);
+  };
+
+  const formatTime = (time) => {
+    if (typeof time !== "string") {
+      console.warn("Invalid time input:", time);
+      return "";
+    }
+    const slicedTime = time.slice(0, 5);
+    convertDateFormat(data?.date);
+    return slicedTime;
+  };
+
+  const payload = {
+    comment,
+    dutyStatus,
+    location,
+    fromTime: `${convertDateFormat(data?.date)}${fromTime}`,
+    toTime: `${convertDateFormat(data?.date)}${toTime}`,
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    putApi(endPoints.logbook.updateLogbook(data?._id), payload, {
+      setLoading,
+      successMsg: "Edited !",
+      additionalFunctions: [handleClose, fetchDetails],
+    });
+  };
 
   return (
     <Modal
       centered
-      title="Edit Elog Form - Hawkins Leroy / Dec 7, 2023"
+      title={`Edit Elog Form -  ${title}`}
       open={show}
       onCancel={handleClose}
       footer={null}
@@ -3423,38 +3620,53 @@ const EditElogEvent = ({ show, handleClose }) => {
     >
       <div className="reset-password-modal">
         <hr />
-        <form>
+        <form onSubmit={submitHandler}>
           <div className="pl-5 pr-5">
-            <ReactApexChart
-              options={chartState.options}
-              series={chartState.series}
-              type="line"
-              height={350}
-            />
+            <div className="p-2">
+              <ReactApexChart
+                options={chartState.options}
+                series={graph?.data?.docs ? chartState.series : []}
+                type="line"
+                height={350}
+              />
+            </div>
 
             <div className="flex-inputs">
               <div className="flex gap-2 item-center">
                 <div>
                   <label className="text-[#8E8F8F]">Start Time</label>
                   <br />
-                  <InputComponent className="text-input" type="time" />
+                  <InputComponent
+                    className="text-input"
+                    type="time"
+                    onChangeEvent={(e) => handleFromTimeChange(e.target.value)}
+                    value={fromTime && formatTime(fromTime)}
+                  />
                 </div>
                 <div>
                   <label className="text-[#8E8F8F]">End Time</label>
                   <br />
-                  <InputComponent className="text-input" type="time" />
+                  <InputComponent
+                    className="text-input"
+                    type="time"
+                    onChangeEvent={(e) => handleToTimeChange(e.target.value)}
+                    value={toTime && formatTime(toTime)}
+                  />
                 </div>
               </div>
               <div>
                 <label className="text-[#8E8F8F]">Event Type</label>
                 <br />
-                <select className="text-input">
-                  <option>On Duty</option>
-                  <option>Off Duty</option>
-                  <option>Driving</option>
-                  <option>Slepeer Berth</option>
-                  <option>Yard</option>
-                  <option>Personal</option>
+                <select
+                  className="text-input"
+                  onChange={(e) => setDutyStatus(e.target.value)}
+                  value={dutyStatus}
+                >
+                  <option value="">select</option>
+                  <option value="On">On Duty</option>
+                  <option value="Off">Off Duty</option>
+                  <option value="D">Driving</option>
+                  <option value="SB">Slepeer Berth</option>
                 </select>
               </div>
             </div>
@@ -3463,7 +3675,11 @@ const EditElogEvent = ({ show, handleClose }) => {
               <div>
                 <label className="text-[#8E8F8F]">Geo Location</label>
                 <br />
-                <InputComponent className="text-input" required />
+                <InputComponent
+                  className="text-input"
+                  onChangeEvent={(e) => setLocation(e.target.value)}
+                  value={location}
+                />
               </div>
             </div>
 
@@ -3472,7 +3688,13 @@ const EditElogEvent = ({ show, handleClose }) => {
                 Comment <span style={{ color: "red" }}>*</span>
               </label>
               <br />
-              <InputComponent className="text-input" required />
+              <InputComponent
+                className="text-input"
+                required
+                type="text"
+                onChangeEvent={(e) => setComment(e.target.value)}
+                value={comment}
+              />
             </div>
 
             <div className="flex justify-between mt-5 gap-5">
@@ -3488,7 +3710,8 @@ const EditElogEvent = ({ show, handleClose }) => {
                 className={
                   "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
                 }
-                type="button"
+                type="submit"
+                isLoading={loading}
               />
             </div>
           </div>
