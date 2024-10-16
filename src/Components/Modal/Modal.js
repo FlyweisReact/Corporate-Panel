@@ -2511,7 +2511,7 @@ const EditDriver = ({ handleClose, show, fetchApi, data }) => {
       cargoType,
       breakCycle,
       timeZone,
-      cycleInSec : "252000"
+      cycleInSec: "252000",
     };
     putApi(endPoints.drivers.updateDriver(data?._id), payload, {
       additionalFunctions: [() => setStep(step + 1)],
@@ -3144,12 +3144,58 @@ const ShareApiKey = ({ show, handleClose }) => {
   );
 };
 
-const EditElog = ({ show, handleClose }) => {
+const EditElog = ({ show, handleClose, title, data }) => {
   const [id, setId] = useState("info");
+  const [driver, setDriver] = useState(null);
+  const [trailerId, setTrailerId] = useState(null);
+  const [destinationLocation, setDestinationLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
+  const [milesDriven, setMilesDriven] = useState(null);
+  const [cycleType, setCycleType] = useState(null);
+  const [dotNumber, setDotNumber] = useState(null);
+  const [vehicleNumber, setVehicleNumber] = useState(null);
+  const [carrierName, setCarrierName] = useState(null);
+  const [driverName, setDriverName] = useState(null);
+  const [coDriverName, setCoDriverName] = useState(null);
+  const [shippingDoc, setShippingDoc] = useState(null);
+  const [twentyForHourStartTime, setTwentyForHourStartTime] = useState(null);
+  const [odometerReading, setOdometerReading] = useState(null);
+  const [officeAddress, setOfficeAddress] = useState(null);
+  const [officeCity, setOfficeCity] = useState(null);
+  const [officeZip, setOfficeZip] = useState(null);
+  const [officeState, setOfficeState] = useState(null);
+  const [officeCountry, setOfficeCountry] = useState(null);
+  const [terminalAddress, setTerminalAddress] = useState(null);
+  const [terminalCity, setTerminalCity] = useState(null);
+  const [terminalZip, setTerminalZip] = useState(null);
+  const [terminalState, setTerminalState] = useState(null);
+  const [terminalCountry, setTerminalCountry] = useState(null);
+  const [comment, setComment] = useState(null);
+
+  useEffect(() => {
+    if (show && data) {
+      console.log(data);
+      setDriver(data?.driver?._id);
+      setDestinationLocation(data?.destinationLocation);
+      setDistance(data?.distance);
+      setMilesDriven(data?.milesDriven);
+      setCycleType(data?.cycleType);
+      setDotNumber(data?.dotNumber);
+      setVehicleNumber(data?.truck?.vehicleNumber);
+      setCarrierName(data?.carrierName);
+      setDriverName(returnFullName(data?.driver));
+      setCoDriverName(data?.coDriverName);
+      setShippingDoc(data?.shippingDoc);
+      setTwentyForHourStartTime(data?.twentyForHourStartTime);
+      setOdometerReading(data?.odometerReading);
+      setTrailerId(data?.trailerId);
+    }
+  }, [show, data]);
+
   return (
     <Modal
       centered
-      title="Edit Elog Form - Hawkins Leroy / Dec 7, 2023"
+      title={`Edit Elog Form - ${title}`}
       open={show}
       onCancel={handleClose}
       footer={null}
@@ -3189,70 +3235,135 @@ const EditElog = ({ show, handleClose }) => {
                     <div>
                       <label className="text-[#8E8F8F]">Driver</label>
                       <br />
-                      <InputComponent className="text-input" required />
+
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={driverName}
+                        onChangeEvent={(e) => setDriverName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">
                         Destination Location
                       </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={destinationLocation}
+                        onChangeEvent={(e) =>
+                          setDestinationLocation(e.target.value)
+                        }
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Distance </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={destinationLocation}
+                        onChangeEvent={(e) =>
+                          setDestinationLocation(e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                   <div className="flex-inputs ">
                     <div>
                       <label className="text-[#8E8F8F]">Miles Driven</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={milesDriven}
+                        onChangeEvent={(e) => setMilesDriven(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Cycle Type</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={cycleType}
+                        onChangeEvent={(e) => setCycleType(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">DOT number</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={dotNumber}
+                        onChangeEvent={(e) => setDotNumber(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="flex-inputs ">
                     <div>
                       <label className="text-[#8E8F8F]">Vehicle Number</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={vehicleNumber}
+                        onChangeEvent={(e) => setVehicleNumber(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Trailer ID</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={trailerId}
+                        onChangeEvent={(e) => setTrailerId(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Carrier Name</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={carrierName}
+                        onChangeEvent={(e) => setCarrierName(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="flex-inputs ">
                     <div>
                       <label className="text-[#8E8F8F]">Driver Name</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={driverName}
+                        onChangeEvent={(e) => setDriverName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Co-Driver</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={coDriverName}
+                        onChangeEvent={(e) => setCoDriverName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Shipping Doc</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={shippingDoc}
+                        onChangeEvent={(e) => setShippingDoc(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="flex-inputs ">
@@ -3261,12 +3372,26 @@ const EditElog = ({ show, handleClose }) => {
                         24 Hours Start Time
                       </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={twentyForHourStartTime}
+                        onChangeEvent={(e) =>
+                          setTwentyForHourStartTime(e.target.value)
+                        }
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Odometer Reading</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={odometerReading}
+                        onChangeEvent={(e) =>
+                          setOdometerReading(e.target.value)
+                        }
+                      />
                     </div>
                     <div></div>
                   </div>
@@ -3565,8 +3690,8 @@ const EditElogEvent = ({
   }, [show && data]);
 
   const convertDateFormat = (dateString) => {
-    if(!dateString){
-      return ;
+    if (!dateString) {
+      return;
     }
     const [day, month, year] = dateString?.split("-");
     return `${year}-${month}-${day}T`;

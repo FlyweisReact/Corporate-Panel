@@ -328,7 +328,14 @@ const LogbookDetails = () => {
 
   return (
     <>
-      <EditElog show={openModal2} handleClose={() => setOpenModal2(false)} />
+      <EditElog
+        show={openModal2}
+        handleClose={() => setOpenModal2(false)}
+        title={`${returnFullName(data?.data)} /  ${formatDateString(
+          formattedDate
+        )}`}
+        data={loogBookData}
+      />
       <EditElogEvent
         show={open}
         handleClose={() => setOpen(false)}
@@ -426,7 +433,7 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Truck Number</p>
-                <p className="text-[#000] font-[900]">{loogBookData?.truck}</p>
+                <p className="text-[#000] font-[900]">{loogBookData?.truck?.vehicleNumber}</p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Trailer ID</p>
