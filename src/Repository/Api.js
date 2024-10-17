@@ -60,8 +60,9 @@ const apiRequest = async (method, url, payload = null, options = {}) => {
       (func) => func && typeof func === "function" && func(response?.data)
     );
   } catch (error) {
+    if (setResponse) setResponse(null);
     handleError(error, errorMsg);
-    setResponse(null);
+
   } finally {
     if (setLoading) setLoading(false);
   }

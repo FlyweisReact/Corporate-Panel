@@ -3144,7 +3144,7 @@ const ShareApiKey = ({ show, handleClose }) => {
   );
 };
 
-const EditElog = ({ show, handleClose, title, data }) => {
+const EditElog = ({ show, handleClose, title, data , fetchHandler }) => {
   const [id, setId] = useState("info");
   const [driver, setDriver] = useState(null);
   const [trailerId, setTrailerId] = useState(null);
@@ -3171,26 +3171,74 @@ const EditElog = ({ show, handleClose, title, data }) => {
   const [terminalState, setTerminalState] = useState(null);
   const [terminalCountry, setTerminalCountry] = useState(null);
   const [comment, setComment] = useState(null);
+  const [ loading , setLoading ] = useState(false)
 
   useEffect(() => {
     if (show && data) {
-      console.log(data);
       setDriver(data?.driver?._id);
       setDestinationLocation(data?.destinationLocation);
       setDistance(data?.distance);
       setMilesDriven(data?.milesDriven);
       setCycleType(data?.cycleType);
       setDotNumber(data?.dotNumber);
-      setVehicleNumber(data?.truck?.vehicleNumber);
+      setVehicleNumber(data?.vehicleNumber);
       setCarrierName(data?.carrierName);
       setDriverName(returnFullName(data?.driver));
       setCoDriverName(data?.coDriverName);
       setShippingDoc(data?.shippingDoc);
       setTwentyForHourStartTime(data?.twentyForHourStartTime);
       setOdometerReading(data?.odometerReading);
+      setOfficeAddress(data?.officeAddress);
       setTrailerId(data?.trailerId);
+      setOfficeCity(data?.officeCity);
+      setOfficeZip(data?.officeZip);
+      setOfficeState(data?.officeState);
+      setOfficeCountry(data?.officeCountry);
+      setTerminalAddress(data?.terminalAddress);
+      setTerminalCity(data?.terminalCity);
+      setTerminalZip(data?.terminalZip);
+      setTerminalState(data?.terminalState);
+      setTerminalCountry(data?.terminalCountry);
+      setComment(data?.comment);
     }
   }, [show, data]);
+
+  const payload ={
+    driver ,
+    trailerId,
+    destinationLocation,
+    distance,
+    milesDriven,
+    cycleType,
+    dotNumber ,
+    vehicleNumber ,
+    carrierName ,
+    driverName,
+    coDriverName,
+    shippingDoc,
+    twentyForHourStartTime,
+    odometerReading,
+    officeAddress,
+    officeCity,
+    officeZip,
+    officeState ,
+    officeCountry ,
+    terminalAddress,
+    terminalCity ,
+    terminalZip ,
+    terminalState,
+    terminalCountry,
+    comment
+  }
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    putApi(endPoints.logbook.editLog(data?._id) , payload , {
+      successMsg :"Success" ,
+      additionalFunctions : [handleClose , fetchHandler ],
+      setLoading
+    })
+  }
 
   return (
     <Modal
@@ -3203,7 +3251,7 @@ const EditElog = ({ show, handleClose, title, data }) => {
     >
       <div className="reset-password-modal">
         <hr />
-        <form>
+        <form onSubmit={submitHandler}>
           <div className="pl-5 pr-5">
             <div className="add-steps mt-2">
               <div className={`step ${id === "info" ? "active" : ""}`}>
@@ -3236,11 +3284,11 @@ const EditElog = ({ show, handleClose, title, data }) => {
                       <label className="text-[#8E8F8F]">Driver</label>
                       <br />
 
-                      <InputComponent
+                      <input
+                        type="text"
                         className="text-input"
-                        required
-                        value={driverName}
-                        onChangeEvent={(e) => setDriverName(e.target.value)}
+                        disabled
+                        defaultValue={driver}
                       />
                     </div>
                     <div>
@@ -3263,10 +3311,8 @@ const EditElog = ({ show, handleClose, title, data }) => {
                       <InputComponent
                         className="text-input"
                         required
-                        value={destinationLocation}
-                        onChangeEvent={(e) =>
-                          setDestinationLocation(e.target.value)
-                        }
+                        value={distance}
+                        onChangeEvent={(e) => setDistance(e.target.value)}
                       />
                     </div>
                   </div>
@@ -3410,29 +3456,54 @@ const EditElog = ({ show, handleClose, title, data }) => {
                     <div>
                       <label className="text-[#8E8F8F]">Address</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={officeAddress}
+                        onChangeEvent={(e) => setOfficeAddress(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">City</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={officeCity}
+                        onChangeEvent={(e) => setOfficeCity(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Zip</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={officeZip}
+                        onChangeEvent={(e) => setOfficeZip(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="flex-inputs ">
                     <div>
                       <label className="text-[#8E8F8F]">State </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={officeState}
+                        onChangeEvent={(e) => setOfficeState(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Country </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={officeCountry}
+                        onChangeEvent={(e) => setOfficeCountry(e.target.value)}
+                      />
                     </div>
                     <div></div>
                   </div>
@@ -3451,29 +3522,58 @@ const EditElog = ({ show, handleClose, title, data }) => {
                     <div>
                       <label className="text-[#8E8F8F]">Address</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={terminalAddress}
+                        onChangeEvent={(e) =>
+                          setTerminalAddress(e.target.value)
+                        }
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">City</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={terminalCity}
+                        onChangeEvent={(e) => setTerminalCity(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Zip</label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={terminalZip}
+                        onChangeEvent={(e) => setTerminalZip(e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="flex-inputs ">
                     <div>
                       <label className="text-[#8E8F8F]">State </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={terminalState}
+                        onChangeEvent={(e) => setTerminalState(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="text-[#8E8F8F]">Country </label>
                       <br />
-                      <InputComponent className="text-input" required />
+                      <InputComponent
+                        className="text-input"
+                        required
+                        value={terminalCountry}
+                        onChangeEvent={(e) =>
+                          setTerminalCountry(e.target.value)
+                        }
+                      />
                     </div>
                     <div></div>
                   </div>
@@ -3486,6 +3586,8 @@ const EditElog = ({ show, handleClose, title, data }) => {
                   className="text-input"
                   placeholder="Enter Comment..."
                   required
+                  value={comment}
+                  onChangeEvent={(e) => setComment(e.target.value)}
                 />
               </div>
             </div>
@@ -3503,7 +3605,8 @@ const EditElog = ({ show, handleClose, title, data }) => {
                 className={
                   "bg-[#34B7C1] w-[50%] h-[45px]  text-white flex justify-center items-center gap-2"
                 }
-                type="button"
+                type="submit"
+                isLoading={loading}
               />
             </div>
           </div>

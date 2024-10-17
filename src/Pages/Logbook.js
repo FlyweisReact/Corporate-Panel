@@ -30,7 +30,6 @@ const thead = [
 ];
 
 const Logbook = () => {
-  const navigate = useNavigate();
   const [selectedTab, setselectedTab] = useState("Active");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeDrivers, setActiveDrivers] = useState({});

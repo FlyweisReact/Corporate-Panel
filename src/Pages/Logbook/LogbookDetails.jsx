@@ -100,7 +100,6 @@ const LogbookDetails = () => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
-  const [data, setData] = useState({});
   const [detail, setDetails] = useState(null);
   const [loogBookData, setLoogBookData] = useState(null);
   const [graph, setGraph] = useState(null);
@@ -178,16 +177,6 @@ const LogbookDetails = () => {
       fetchDetails();
     }
   }, [formattedDate, id, fetchDetails]);
-
-  const fetchHandler = useCallback(() => {
-    getApi(endPoints.drivers.getDriverDetail(id), {
-      setResponse: setData,
-    });
-  }, [id]);
-
-  useEffect(() => {
-    fetchHandler();
-  }, [fetchHandler]);
 
   useEffect(() => {
     if (graph) {
@@ -290,13 +279,20 @@ const LogbookDetails = () => {
     </span>,
   ]);
 
-  useEffect(() => {
-    if (id) {
-      getApi(endPoints.logbook.getLogbookByDriver(id), {
-        setResponse: setDetails,
-      });
+  const fetchDriverLogbook = useCallback(() => {
+    if (id && formattedDate) {
+      getApi(
+        endPoints.logbook.getLogbookByDriver(id, inputDate(formattedDate)),
+        {
+          setResponse: setDetails,
+        }
+      );
     }
-  }, [id]);
+  }, [id, formattedDate]);
+
+  useEffect(() => {
+    fetchDriverLogbook();
+  }, [fetchDriverLogbook]);
 
   useEffect(() => {
     if (detail) {
@@ -313,12 +309,12 @@ const LogbookDetails = () => {
     const day = split?.[0];
     const month = split?.[1];
     const year = split?.[2];
+
     return `${year}-${month}-${day}`; // Return in YYYY-MM-DD format
   };
 
   // Function to handle date updates from input
   const updateDateHandler = (date) => {
-    console.log("date", date);
     const split = date?.split("-");
     const year = split?.[0]; // Correct index for year
     const month = split?.[1];
@@ -331,15 +327,16 @@ const LogbookDetails = () => {
       <EditElog
         show={openModal2}
         handleClose={() => setOpenModal2(false)}
-        title={`${returnFullName(data?.data)} /  ${formatDateString(
+        title={`${returnFullName(loogBookData?.driver)} /  ${formatDateString(
           formattedDate
         )}`}
         data={loogBookData}
+        fetchHandler={fetchDriverLogbook}
       />
       <EditElogEvent
         show={open}
         handleClose={() => setOpen(false)}
-        title={`${returnFullName(data?.data)} /  ${formatDateString(
+        title={`${returnFullName(loogBookData?.driver)} /  ${formatDateString(
           formattedDate
         )}`}
         date={formatDateString(formattedDate)}
@@ -350,10 +347,12 @@ const LogbookDetails = () => {
       <div className={`mb-3`}>
         <div className={styles.log_header}>
           <div className="flex items-center gap-3">
-            <p className="font-[700] w-[40px]">{returnNickName(data?.data)}</p>
+            <p className="font-[700] w-[40px]">
+              {returnNickName(loogBookData?.driver)}
+            </p>
             <div>
               <div className="text-[#1F384C] font-[700]">
-                {returnFullName(data?.data)}
+                {returnFullName(loogBookData?.driver)}
               </div>
               <div className="flex items-center gap-1">
                 <img
@@ -362,7 +361,7 @@ const LogbookDetails = () => {
                   className="w-[10px] h-[10px]"
                 />
                 <span className="text-[#1F384C] text-[14px]">
-                  {data?.data?.dutyStatus}
+                  {loogBookData?.driver?.dutyStatus}
                 </span>
               </div>
             </div>
@@ -373,8 +372,8 @@ const LogbookDetails = () => {
                 className="placeholder: ml-2 block w-[160px] h-[45px] bg-[#F9F9F9] rounded-xl border-0 py-1.5 pr-4 text-gray-900  ring-gray-300 placeholder:text-gray-400  sm:text-sm  sm:leading-6
                 border border-1 border-[#8E8F8F]"
                 type="date"
-                value={inputDate(formattedDate)} // Pass formatted date to input
-                onChange={(e) => updateDateHandler(e.target.value)} // Update handler on change
+                value={inputDate(formattedDate)}
+                onChange={(e) => updateDateHandler(e.target.value)}
               />
             </div>
             <div
@@ -409,7 +408,9 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Co Driver Name</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.coDriverName}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Shipping ID</p>
@@ -433,7 +434,9 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Truck Number</p>
-                <p className="text-[#000] font-[900]">{loogBookData?.truck?.vehicleNumber}</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.vehicleNumber}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Trailer ID</p>
@@ -443,11 +446,15 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Timezone</p>
-                <p className="text-[#000] font-[900]">{data?.data?.timeZone}</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.driver?.timeZone}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>24 Start Time</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.twentyForHourStartTime}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Start / End Engine Hours</p>
@@ -456,12 +463,14 @@ const LogbookDetails = () => {
               <div className="text-[#8E8F8F]">
                 <p>Driver Name</p>
                 <p className="text-[#000] font-[900]">
-                  {returnFullName(data?.data)}
+                  {loogBookData?.driverName}
                 </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Licence State</p>
-                <p className="text-[#000] font-[900]">{data?.data?.state}</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.driver?.state}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>ELD ID</p>
@@ -469,11 +478,15 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>File Comment</p>
-                <p className="text-[#000] font-[900]">--</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.comment}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Driver Licence</p>
-                <p className="text-[#000] font-[900]">{data?.data?.license}</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.driver?.license}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>ELD Manufacturer</p>
@@ -505,7 +518,9 @@ const LogbookDetails = () => {
               </div>
               <div className="text-[#8E8F8F]">
                 <p>Carrier</p>
-                <p className="text-[#000] font-[900]">---</p>
+                <p className="text-[#000] font-[900]">
+                  {loogBookData?.carrierName}
+                </p>
               </div>
               <div className="text-[#8E8F8F]">
                 <p>USDOT </p>

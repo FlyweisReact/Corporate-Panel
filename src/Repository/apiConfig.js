@@ -95,12 +95,13 @@ const endPoints = {
     activeKey: "api/v1/corporate/allSharingApiKey",
   },
   logbook: {
-    getLogbookByDriver: (id) => `api/v1/corporate/AllElogForm?driver=${id}`,
+    getLogbookByDriver: (id , date) => `api/v1/corporate/AllElogForm?driver=${id}&date=${date}`,
     getDriverLoogbook: ({ id, date }) =>
       `api/v1/user/getDriverLogByDriverId?driver=${id}&date=${date}&limit=1000`,
     updateLogbook: (id) => `api/v1/user/updateDriverLog/${id}`,
     getRecap: (id) =>
       `api/v1/user/getAllDriverLogFromCurrentMonthByDriverId/${id}`,
+    editLog : (id) => `api/v1/user/updateElogForm/${id}`
   },
 };
 
