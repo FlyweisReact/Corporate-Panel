@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import TableLayout from "../../Components/TableLayout";
 import { EditElog, EditElogEvent } from "../../Components/Modal/Modal";
@@ -11,11 +11,13 @@ import {
   returnFullName,
   convertMinutesToTimeFormat,
   convertSecondsToHHMM,
+  downloadReport,
 } from "../../utils/utils";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 import styles from "../../CSS/modules/Logbook.module.css";
 import { statusMapping } from "../../constant";
+import { useReactToPrint } from "react-to-print";
 
 const returnNickName = (data) => {
   if (data?.firstName || data?.lastName) {
@@ -86,7 +88,7 @@ const RecapContainer = ({ recapData }) => {
     }
   };
   return recapData?.data?.map((item, index) => (
-    <div className="flex justify-between" key={index}>
+    <div className="flex justify-between hide-print" key={index}>
       <p className={styles.desc}> {dateFormatter(item?.date)} </p>
       <p className={styles.desc}>
         {" "}
@@ -322,6 +324,14 @@ const LogbookDetails = () => {
     setFormattedDate(`${day}-${month}-${year}`); // Set date in DD-MM-YYYY format
   };
 
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+  const handlePrint2 = () => {
+    downloadReport(handlePrint);
+  };
+
   return (
     <>
       <EditElog
@@ -344,7 +354,7 @@ const LogbookDetails = () => {
         data={selectedLog}
         fetchDetails={fetchDetails}
       />
-      <div className={`mb-3`}>
+      <div className={`mb-3`} ref={componentRef}>
         <div className={styles.log_header}>
           <div className="flex items-center gap-3">
             <p className="font-[700] w-[40px]">
@@ -378,12 +388,15 @@ const LogbookDetails = () => {
             </div>
             <div
               onClick={() => setOpenModal2(true)}
-              className="flex items-center cursor-pointer gap-2 py-2 px-3 bg-[#34B7C1] rounded-md border border-1 border-[#34B7C1]"
+              className="flex items-center cursor-pointer gap-2 py-2 px-3 bg-[#34B7C1] rounded-md border border-1 border-[#34B7C1] hidePrint"
             >
               <img src="../Vector4.png" alt="" className="h-fit" />
               <span className="text-white">Edit Elog Form</span>
             </div>
-            <div className="flex items-center gap-2 py-2 px-3 bg-[#34B7C1] rounded-md border border-1 border-[#34B7C1]">
+            <div
+              className="flex items-center gap-2 py-2 px-3 bg-[#34B7C1] rounded-md border border-1 border-[#34B7C1] hidePrint"
+              onClick={handlePrint2}
+            >
               <img src="../Vector3.png" alt="" className="h-fit" />
               <span className="text-white">Generate Report</span>
             </div>
@@ -555,7 +568,7 @@ const LogbookDetails = () => {
                 />
                 <div className={styles.date_handler}>
                   <div
-                    className={styles.go_back}
+                    className={`${styles.go_back} hidePrint`}
                     onClick={() =>
                       getPreviousDay(formattedDate, setFormattedDate)
                     }
@@ -564,7 +577,7 @@ const LogbookDetails = () => {
                   </div>
                   {getTodayDate() !== formattedDate && (
                     <div
-                      className={styles.go_forward}
+                      className={`${styles.go_forward} hidePrint`}
                       onClick={() =>
                         getUpcomingDate(formattedDate, setFormattedDate)
                       }
@@ -582,11 +595,11 @@ const LogbookDetails = () => {
               />
             </div>
             <div
-              className={`px-6 py-4 w-[18vw] bg-[#E8F4FF] ${styles.recap_div}`}
+              className={`px-6 py-4 w-[18vw] bg-[#E8F4FF] ${styles.recap_div} hidePrint`}
             >
               <p>Recap</p>
 
-              <div className="mt-4 text-[#858B9A]">
+              <div className="mt-4 text-[#858B9A] ">
                 <div className="flex flex-col gap-4 pr-3">
                   <RecapContainer recapData={recapData} />
                 </div>

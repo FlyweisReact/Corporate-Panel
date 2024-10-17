@@ -82,4 +82,39 @@ export const convertSecondsToHHMM = (seconds) => {
   return `${formattedHours}:${formattedMinutes}`;
 };
 
+// print report
+// export const downloadReport = (handlePrint) => {
+//   var elements = document.getElementsByClassName("hidePrint");
+//   for (var i = 0; i < elements.length; i++) {
+//     elements[i].style.display = "none";
+//   }
+//   handlePrint();
+//   setTimeout(() => {
+//     for (var i = 0; i < elements.length; i++) {
+//       elements[i].style.display = "block";
+//     }
+//   }, 1000);
+// };
+
+export const downloadReport = (handlePrint) => {
+  // Hide elements before printing
+  var elements = document.getElementsByClassName("hidePrint");
+  Array.from(elements).forEach((el) => {
+    el.style.setProperty("display", "none", "important");
+  });
+
+  // Use requestAnimationFrame to ensure styles are applied
+  requestAnimationFrame(() => {
+    handlePrint();
+
+    // Restore elements after a short delay to ensure print is complete
+    setTimeout(() => {
+      Array.from(elements).forEach((el) => {
+        el.style.removeProperty("display");
+      });
+    }, 500); // Reduce delay time for a smoother user experience
+  });
+};
+
+
 export { tokenSaver, dateFormatter, returnFullName, LogOutHandler };
